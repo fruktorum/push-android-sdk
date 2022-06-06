@@ -3,14 +3,10 @@ package com.devinotele.devinosdk.sdk;
 import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
-
 import androidx.core.app.NotificationManagerCompat;
-
-import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.JsonObject;
-
 import java.util.HashMap;
-
 import io.reactivex.Observable;
 
 /**
@@ -28,7 +24,7 @@ public class DevinoSdk {
     private String appVersion;
     private Boolean isInitedProperly;
     private HelpersPackage hp;
-    private FirebaseInstanceId firebaseInstance;
+    private FirebaseMessaging firebaseMessaging;
     private Integer geoFrequency;
     private Integer geoMode;
     private DevinoLogsCallback logsCallback = getEmptyCallback();
@@ -44,13 +40,13 @@ public class DevinoSdk {
 
         Context ctx;
         String key, applicationId;
-        FirebaseInstanceId firebaseInstanceId;
+        FirebaseMessaging firebaseMessaging;
 
-        public Builder(Context ctx, String key, String applicationId, FirebaseInstanceId firebaseInstanceId) {
+        public Builder(Context ctx, String key, String applicationId, FirebaseMessaging firebaseMessaging) {
             this.ctx = ctx;
             this.key = key;
             this.applicationId = applicationId;
-            this.firebaseInstanceId = firebaseInstanceId;
+            this.firebaseMessaging = firebaseMessaging;
             instance = new DevinoSdk();
         }
 
@@ -61,7 +57,7 @@ public class DevinoSdk {
             instance.hp.setSharedPrefsHelper(new SharedPrefsHelper(ctx.getSharedPreferences("", Context.MODE_PRIVATE)));
             instance.hp.setNotificationsHelper(new NotificationsHelper(ctx));
             instance.hp.setDevinoLocationHelper(new DevinoLocationHelper(ctx));
-            instance.firebaseInstance = firebaseInstanceId;
+            instance.firebaseMessaging = firebaseMessaging;
             instance.isInitedProperly = true;
             instance.hp.getSharedPrefsHelper().saveData(SharedPrefsHelper.KEY_API_SECRET, key);
             instance.hp.setNetworkRepository(new DevinoNetworkRepositoryImpl(
@@ -71,7 +67,7 @@ public class DevinoSdk {
                             instance.logsCallback
                     )
             );
-            instance.saveToken(instance.firebaseInstance, instance.logsCallback);
+            instance.saveToken(instance.firebaseMessaging, instance.logsCallback);
         }
 
         /**Set a callback to get library messages
@@ -108,7 +104,7 @@ public class DevinoSdk {
      * @param email user email
      */
     public void register(String phone, String email) {
-        handleToken(firebaseInstance, logsCallback, phone, email);
+        handleToken(firebaseMessaging, logsCallback, phone, email);
     }
 
     /**
@@ -261,19 +257,19 @@ public class DevinoSdk {
         return instance.customSound;
     }
 
-    private static void handleToken(FirebaseInstanceId firebaseInstanceId,
+    private static void handleToken(FirebaseMessaging firebaseMessaging,
                                     DevinoLogsCallback callback, String phone, String email) {
         HandleTokenUseCase useCase = new HandleTokenUseCase(instance.hp, callback, phone, email);
-        useCase.run(firebaseInstanceId);
+        useCase.run(firebaseMessaging);
     }
 
     private boolean isRegistered() {
         return instance.hp.getSharedPrefsHelper().getBoolean(SharedPrefsHelper.KEY_TOKEN_REGISTERED);
     }
 
-    private void saveToken(FirebaseInstanceId firebaseInstanceId, DevinoLogsCallback callback) {
+    private void saveToken(FirebaseMessaging firebaseMessaging, DevinoLogsCallback callback) {
         SaveTokenUseCase useCase = new SaveTokenUseCase(instance.hp, callback);
-        useCase.run(firebaseInstanceId);
+        useCase.run(firebaseMessaging);
     }
 
     private DevinoLogsCallback getEmptyCallback() {
