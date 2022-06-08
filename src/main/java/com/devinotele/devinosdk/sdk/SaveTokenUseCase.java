@@ -1,11 +1,7 @@
 package com.devinotele.devinosdk.sdk;
 
 
-import android.util.Log;
-
 import com.google.firebase.messaging.FirebaseMessaging;
-
-import java.util.Objects;
 
 
 class SaveTokenUseCase extends BaseUC {
@@ -30,7 +26,6 @@ class SaveTokenUseCase extends BaseUC {
             if (!token.equals(persistedToken)) {
                 sharedPrefsHelper.saveData(SharedPrefsHelper.KEY_PUSH_TOKEN, token);
                 networkRepository.updateToken(token);
-                Log.d("DEB123", "Token: " + token);
                 logsCallback.onMessageLogged("Push token persisted\n" + token);
                 DevinoSdk.getInstance().appStarted();
             }

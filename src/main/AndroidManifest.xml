@@ -5,15 +5,20 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
 
-        <receiver android:name=".sdk.DevinoPushReceiver"/>
-        <receiver android:name=".sdk.DevinoCancelReceiver"/>
-        <receiver android:name=".sdk.DevinoLocationReceiver">
+        <receiver android:name=".sdk.DevinoPushReceiver" />
+
+        <receiver android:name=".sdk.DevinoCancelReceiver" />
+
+        <receiver
+            android:name=".sdk.DevinoLocationReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.devinotele.devinosdk.ALARM" />
             </intent-filter>
@@ -34,5 +39,4 @@
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
     </application>
-
 </manifest>

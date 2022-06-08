@@ -1,12 +1,13 @@
 package com.devinotele.devinosdk.sdk;
 
 
-import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessaging;
+
 import java.util.Objects;
-import retrofit2.HttpException;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.HttpException;
 
 
 class HandleTokenUseCase extends BaseUC {
@@ -33,7 +34,6 @@ class HandleTokenUseCase extends BaseUC {
                             return;
                         }
                         String token = task.getResult();
-                        Log.d("TOKEN", token);
                         sharedPrefsHelper.saveData(SharedPrefsHelper.KEY_PUSH_TOKEN, token);
                         DevinoSdk.getInstance().appStarted();
                         registerUser(email, phone);
