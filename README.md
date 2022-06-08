@@ -45,7 +45,7 @@ public class DevinoExampleApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        FirebaseInstanceId firebase = FirebaseInstanceId.getInstance();
+        FirebaseMessaging firebase = FirebaseMessaging.getInstance();
         
         String devinoSecretKey = "Secret Key";
         String appId = "Application ID";
