@@ -248,6 +248,13 @@ public class DevinoSdk {
         DevinoSdkPushService.defaultNotificationIcon = icon;
     }
 
+    /**
+     * Set default color of notification small icon
+     */
+    public void setDefaultNotificationIconColor(int color) {
+        DevinoSdkPushService.defaultNotificationIconColor = color;
+    }
+
     void hideNotification(Context context) {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         notificationManager.cancelAll();

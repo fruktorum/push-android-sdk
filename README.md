@@ -63,6 +63,14 @@ If not redefined, "devino://default-push-action" will be used.
 DevinoSdk.getInstance().setDefaultDeepLinkAction("scheme", "host");
 ```
 
+Also you can override default notification icon and icon color
+
+```
+DevinoSdk.getInstance().setDefaultNotificationIcon(drawable);
+DevinoSdk.getInstance().setDefaultNotificationIconColor(colorInt);
+```
+Icon must have alpha transparency.
+
 
 ### Get sdk logs
 
