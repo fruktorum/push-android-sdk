@@ -1,9 +1,7 @@
 package com.devinotele.devinosdk.sdk;
 
 
-import com.google.firebase.iid.FirebaseInstanceId;
-
-import java.util.Objects;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 
 class SaveTokenUseCase extends BaseUC {
@@ -15,14 +13,14 @@ class SaveTokenUseCase extends BaseUC {
         logsCallback = callback;
     }
 
-    void run(FirebaseInstanceId firebaseInstanceId) {
-        firebaseInstanceId.getInstanceId().addOnCompleteListener(task -> {
+    void run(FirebaseMessaging firebaseMessaging) {
+        firebaseMessaging.getToken().addOnCompleteListener(task -> {
 
             if (!task.isSuccessful()) {
                 return;
             }
 
-            String token = Objects.requireNonNull(task.getResult()).getToken();
+            String token = task.getResult();
             String persistedToken = sharedPrefsHelper.getString(SharedPrefsHelper.KEY_PUSH_TOKEN);
 
             if (!token.equals(persistedToken)) {

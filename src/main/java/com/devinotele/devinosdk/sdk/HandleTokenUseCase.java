@@ -1,13 +1,13 @@
 package com.devinotele.devinosdk.sdk;
 
 
-import android.util.Log;
+import com.google.firebase.messaging.FirebaseMessaging;
 
-import com.google.firebase.iid.FirebaseInstanceId;
-import retrofit2.HttpException;
+import java.util.Objects;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.HttpException;
 
 
 class HandleTokenUseCase extends BaseUC {
@@ -24,17 +24,16 @@ class HandleTokenUseCase extends BaseUC {
         this.email = email;
     }
 
-    void run(FirebaseInstanceId firebaseInstanceId) {
+    void run(FirebaseMessaging firebaseMessaging) {
         if (sharedPrefsHelper.getBoolean(SharedPrefsHelper.KEY_TOKEN_REGISTERED)) registerUser(email, phone);
         else {
-            firebaseInstanceId.getInstanceId()
+            firebaseMessaging.getToken()
                     .addOnCompleteListener(task -> {
                         if (!task.isSuccessful()) {
-                            logsCallback.onMessageLogged("Firebase Error: " + task.getException().getMessage());
+                            logsCallback.onMessageLogged("Firebase Error: " + Objects.requireNonNull(task.getException()).getMessage());
                             return;
                         }
-                        String token = task.getResult().getToken();
-                        Log.d("TOKEN", token);
+                        String token = task.getResult();
                         sharedPrefsHelper.saveData(SharedPrefsHelper.KEY_PUSH_TOKEN, token);
                         DevinoSdk.getInstance().appStarted();
                         registerUser(email, phone);

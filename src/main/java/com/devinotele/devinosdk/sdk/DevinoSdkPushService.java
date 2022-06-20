@@ -1,5 +1,6 @@
 package com.devinotele.devinosdk.sdk;
 
+import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -12,6 +13,8 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -36,6 +39,9 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
     @DrawableRes
     static Integer defaultNotificationIcon = R.drawable.ic_grey_circle;
 
+    @ColorInt
+    static Integer defaultNotificationIconColor = 0x333333;
+
     private static final int RESOURCE_NOT_FOUND = 0;
 
     @Override
@@ -51,6 +57,7 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
 
             String image = data.get("image");
             String icon = data.get("smallIcon");
+            String iconColor = data.get("iconColor");
             String title = data.get("title");
             String body = data.get("body");
             String action = data.get("action");
@@ -63,7 +70,7 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
 
             boolean isSilent = "true".equalsIgnoreCase(data.get("silentPush"));
             if (!isSilent) {
-                showSimpleNotification(title, body, icon, image, buttons, true, sound, pushId, action);
+                showSimpleNotification(title, body, icon, iconColor, image, buttons, true, sound, pushId, action);
             }
 
             DevinoSdk.getInstance().pushEvent(pushId, DevinoSdk.PushStatus.DELIVERED, null);
@@ -71,7 +78,7 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
 
     }
 
-    public void showSimpleNotification(String title, String text, String smallIcon, String largeIcon, List<PushButton> buttons, Boolean bigPicture, Uri sound, String pushId, String action) {
+    public void showSimpleNotification(String title, String text, String smallIcon, String iconColor, String largeIcon, List<PushButton> buttons, Boolean bigPicture, Uri sound, String pushId, String action) {
 
         Intent broadcastIntent = new Intent(getApplicationContext(), DevinoPushReceiver.class);
         broadcastIntent.putExtra(DevinoPushReceiver.KEY_PUSH_ID, pushId);
@@ -102,6 +109,15 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
             builder.setSmallIcon(getIconDrawableId(getApplicationContext(), smallIcon));
         }
         else builder.setSmallIcon(defaultNotificationIcon);
+
+        if (iconColor != null) {
+            try {
+                Integer color = Integer.getInteger(iconColor);
+                if (color != null) builder.setColor(color);
+            } catch (Exception e) { e.printStackTrace(); }
+        } else {
+            builder.setColor(defaultNotificationIconColor);
+        }
 
         if (buttons != null && buttons.size() > 0) {
             for (PushButton button : buttons) {
