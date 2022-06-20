@@ -9,6 +9,7 @@ import com.google.gson.JsonObject;
 
 import java.util.HashMap;
 
+import androidx.annotation.ColorInt;
 import androidx.core.app.NotificationManagerCompat;
 import io.reactivex.Observable;
 
@@ -265,6 +266,15 @@ public class DevinoSdk {
      */
     public void setDefaultNotificationIcon(int icon) {
         DevinoSdkPushService.defaultNotificationIcon = icon;
+    }
+
+    /**
+     * Set default color of notification small icon
+     *
+     * @param color color of icon
+     */
+    public void setDefaultNotificationIconColor(@ColorInt int color) {
+        DevinoSdkPushService.defaultNotificationIconColor = color;
     }
 
     void hideNotification(Context context) {

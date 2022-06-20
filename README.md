@@ -66,6 +66,14 @@ Also you can override default push action scheme and host. If not redefined, "de
 DevinoSdk.getInstance().setDefaultDeepLinkAction("scheme", "host");
 ```
 
+Also you can override default notification icon and icon color
+
+```
+DevinoSdk.getInstance().setDefaultNotificationIcon(drawable);
+DevinoSdk.getInstance().setDefaultNotificationIconColor(colorInt);
+```
+Icon must have alpha transparency.
+
 ### Get sdk logs
 
 To subscribe for sdk logs create instance of DevinoLogsCallback
