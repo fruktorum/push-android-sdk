@@ -3,18 +3,21 @@ package com.devinotele.devinosdk.sdk;
 import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
-import androidx.core.app.NotificationManagerCompat;
+
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.JsonObject;
+
 import java.util.HashMap;
+
+import androidx.core.app.NotificationManagerCompat;
 import io.reactivex.Observable;
 
 /**
  * Main library class.
  * Init this class properly
- *
+ * <p>
  * Get instance of a this class via DevinoSdk.getInstance()
- * */
+ */
 @SuppressWarnings("unused")
 public class DevinoSdk {
 
@@ -32,27 +35,32 @@ public class DevinoSdk {
 
     public static synchronized DevinoSdk getInstance() throws IllegalStateException {
         if (instance != null) return instance;
-        else throw new IllegalStateException("Devino SDK was not initialized properly. Use DevinoSdk.Builder to init SDK.");
+        else
+            throw new IllegalStateException("Devino SDK was not initialized properly. Use DevinoSdk.Builder to init SDK.");
     }
 
-    /**Class builder*/
+    /**
+     * Class builder
+     */
     public static class Builder {
 
         Context ctx;
-        String key, applicationId;
+        String key, applicationId, appVersion;
         FirebaseMessaging firebaseMessaging;
 
-        public Builder(Context ctx, String key, String applicationId, FirebaseMessaging firebaseMessaging) {
+        public Builder(Context ctx, String key, String applicationId, String appVersion, FirebaseMessaging firebaseMessaging) {
             this.ctx = ctx;
             this.key = key;
             this.applicationId = applicationId;
             this.firebaseMessaging = firebaseMessaging;
+            this.appVersion = appVersion;
             instance = new DevinoSdk();
         }
 
         public void build() {
             instance.applicationKey = key;
             instance.applicationId = applicationId;
+            instance.appVersion = appVersion;
             instance.hp = new HelpersPackage();
             instance.hp.setSharedPrefsHelper(new SharedPrefsHelper(ctx.getSharedPreferences("", Context.MODE_PRIVATE)));
             instance.hp.setNotificationsHelper(new NotificationsHelper(ctx));
@@ -70,10 +78,11 @@ public class DevinoSdk {
             instance.saveToken(instance.firebaseMessaging, instance.logsCallback);
         }
 
-        /**Set a callback to get library messages
+        /**
+         * Set a callback to get library messages
          * callback may also be set up annytime via requestLogs() function
-         *Use unsubscribeLogs() function to unsubscribe.
-         * */
+         * Use unsubscribeLogs() function to unsubscribe.
+         */
         public Builder setLogsCallback(DevinoLogsCallback callback) {
             instance.logsCallback = callback;
             instance.logsCallback.onMessageLogged("Logs are enabled.");
@@ -83,6 +92,7 @@ public class DevinoSdk {
 
     /**
      * Register callback to get library messages
+     *
      * @param callback messages are dispathced to this callback
      */
     public void requestLogs(DevinoLogsCallback callback) {
@@ -100,6 +110,7 @@ public class DevinoSdk {
 
     /**
      * Update user data (data will be bound to current push token)
+     *
      * @param phone user phone
      * @param email user email
      */
@@ -112,11 +123,12 @@ public class DevinoSdk {
      */
     public void appStarted() {
         AppStartedUseCase useCase = new AppStartedUseCase(instance.hp, logsCallback);
-        useCase.run("appVersion???");
+        useCase.run(appVersion);
     }
 
     /**
      * Send any custon event
+     *
      * @param eventName Event name
      * @param eventData Key-Value typed data
      */
@@ -127,7 +139,8 @@ public class DevinoSdk {
 
     /**
      * Send location data
-     * @param latitude -
+     *
+     * @param latitude  -
      * @param longitude -
      */
     public void sendGeo(Double latitude, Double longitude) {
@@ -145,9 +158,10 @@ public class DevinoSdk {
 
     /**
      * Report push event
-     * @param pushId -
+     *
+     * @param pushId     -
      * @param actionType Use DevinoSdk.PushStatus enum to send correct value
-     * @param actionId Any value or null
+     * @param actionId   Any value or null
      */
     public void pushEvent(String pushId, String actionType, String actionId) {
         PushEventUseCase useCase = new PushEventUseCase(instance.hp, logsCallback);
@@ -156,6 +170,7 @@ public class DevinoSdk {
 
     /**
      * Report server if app is subscribed for push messages
+     *
      * @param subscribed true or false
      */
     public void activateSubscription(Boolean subscribed) {
@@ -165,6 +180,7 @@ public class DevinoSdk {
 
     /**
      * Check subscription status
+     *
      * @return Observable<JsonObject> subscription status in success json { "result": boolean }
      */
     public Observable<JsonObject> checkSubscription() {
@@ -174,7 +190,8 @@ public class DevinoSdk {
 
     /**
      * Shows UI dialog requesting user geo permission
-     * @param activity Calling activity
+     *
+     * @param activity    Calling activity
      * @param requestCode specify code to handle result in onRequestPermissionsResult() method of your Activity
      */
     public void requestGeoPermission(Activity activity, int requestCode) {
@@ -185,13 +202,13 @@ public class DevinoSdk {
     /**
      * Sends user location repeatedely in given interval (minutes)
      * Updates stop on phone reboot (you need to call this function once again after reboot)
-     *
+     * <p>
      * It is not guaranteed that location is sent in every case. Some Android OS versions may restrict that
      * or GPS may be disabled.
      * Also Android OS may reschedule this tasks. And if you set 10 minutes interval some messages
      * will be sent after 10 minutes, some after 12 (or whatever OS will decide)
      *
-     * @param context -
+     * @param context         -
      * @param intervalMinutes -
      */
     public void subscribeGeo(Context context, int intervalMinutes) {
@@ -202,6 +219,7 @@ public class DevinoSdk {
 
     /**
      * Stops sending locations
+     *
      * @param context -
      */
     public void unsubscribeGeo(Context context) {
@@ -226,10 +244,11 @@ public class DevinoSdk {
         customSound = null;
     }
 
-    /**Cancel all unfinished requests
+    /**
+     * Cancel all unfinished requests
      * Some network requests are retried few times when failed.
      * It is highly recomended that you call this function when activity (fragment) is destroyed (paused)
-     * */
+     */
     public void stop() {
         BaseUC.unsubscribeAll();
     }
@@ -244,7 +263,7 @@ public class DevinoSdk {
     /**
      * Set default small icon for notification
      */
-    public void setDefaultNotificationIcon(int icon){
+    public void setDefaultNotificationIcon(int icon) {
         DevinoSdkPushService.defaultNotificationIcon = icon;
     }
 
@@ -285,8 +304,8 @@ public class DevinoSdk {
 
     class PushStatus {
         static final String DELIVERED = "DELIVERED";
-        static final String OPENED    = "OPENED";
-        static final String CANCELED  = "CANCELED";
+        static final String OPENED = "OPENED";
+        static final String CANCELED = "CANCELED";
     }
 
 }
