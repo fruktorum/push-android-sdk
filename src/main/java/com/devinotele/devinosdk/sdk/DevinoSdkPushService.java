@@ -1,6 +1,5 @@
 package com.devinotele.devinosdk.sdk;
 
-import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -13,12 +12,6 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 
-import androidx.annotation.ColorInt;
-import androidx.annotation.ColorRes;
-import androidx.annotation.DrawableRes;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-
 import com.devinotele.devinosdk.R;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -29,6 +22,11 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 public class DevinoSdkPushService extends FirebaseMessagingService {
 
@@ -91,8 +89,8 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
         Intent deleteIntent = new Intent(getApplicationContext(), DevinoCancelReceiver.class);
         deleteIntent.putExtra(DevinoPushReceiver.KEY_PUSH_ID, pushId);
 
-        PendingIntent defaultPendingIntent = PendingIntent.getBroadcast(getApplicationContext(), broadcastIntent.hashCode(), broadcastIntent, PendingIntent.FLAG_ONE_SHOT);
-        PendingIntent deletePendingIntent = PendingIntent.getBroadcast(getApplicationContext(), deleteIntent.hashCode(), deleteIntent, PendingIntent.FLAG_ONE_SHOT);
+        PendingIntent defaultPendingIntent = PendingIntent.getBroadcast(getApplicationContext(), broadcastIntent.hashCode(), broadcastIntent, PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent deletePendingIntent = PendingIntent.getBroadcast(getApplicationContext(), deleteIntent.hashCode(), deleteIntent, PendingIntent.FLAG_IMMUTABLE);
 
         createNotificationChannel();
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
@@ -126,7 +124,7 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
                     intent.putExtra(DevinoPushReceiver.KEY_DEEPLINK, button.deeplink);
                     intent.putExtra(DevinoPushReceiver.KEY_PICTURE, button.pictureLink);
                     intent.putExtra(DevinoPushReceiver.KEY_PUSH_ID, pushId);
-                    PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), button.hashCode(), intent, PendingIntent.FLAG_ONE_SHOT);
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), button.hashCode(), intent, PendingIntent.FLAG_IMMUTABLE);
                     builder.addAction(R.drawable.ic_grey_circle, button.text, pendingIntent);
                 }
             }

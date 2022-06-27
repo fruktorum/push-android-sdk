@@ -43,7 +43,7 @@ public class DevinoLocationReceiver extends BroadcastReceiver {
     static PendingIntent getPendingIntent(Context context) {
         Intent alarmIntent = new Intent(context, DevinoLocationReceiver.class);
         alarmIntent.setAction(CUSTOM_INTENT);
-        return PendingIntent.getBroadcast(context, 0, alarmIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        return PendingIntent.getBroadcast(context, 0, alarmIntent, PendingIntent.FLAG_IMMUTABLE);
     }
 
 }

@@ -206,7 +206,7 @@ DevinoSdk.getInstance().pushEvent(pushId, DevinoSdk.PushStatus.DELIVERED, null);
 True by default
 
 ```
-SevenTechSdk.getInstance().activateSubscription(true);
+DevinoSdk.getInstance().activateSubscription(true);
 ```
 
 ### Check notification subscription status
@@ -214,7 +214,7 @@ SevenTechSdk.getInstance().activateSubscription(true);
 Use rxJava and get subscription status in success json { "result": boolean }
 
 ```
-SevenTechSdk.getInstance().checkSubscription()
+DevinoSdk.getInstance().checkSubscription()
     .subscribe(
         json -> //do what you need,
         throwable -> //do what you need
