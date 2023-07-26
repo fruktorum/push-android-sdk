@@ -1,9 +1,13 @@
 package com.devinotele.devinosdk.sdk;
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
+
+import java.util.Arrays;
 
 public class DevinoPushReceiver extends BroadcastReceiver {
 
@@ -31,6 +35,12 @@ public class DevinoPushReceiver extends BroadcastReceiver {
             context.startActivity(startMain);
         } catch (Throwable e) {
             e.printStackTrace();
+            Log.d("DevinoPush", "e.localizedMessage =  " + e.getLocalizedMessage());
+            new AlertDialog.Builder(context)
+                    .setTitle("onReceive() startActivity: " + e.getLocalizedMessage())
+                    .setMessage(Arrays.toString(e.getStackTrace()))
+                    .setPositiveButton(android.R.string.yes, null)
+                    .show();
         }
 
         DevinoSdk.getInstance().pushEvent(pushId, DevinoSdk.PushStatus.OPENED, deepLink);

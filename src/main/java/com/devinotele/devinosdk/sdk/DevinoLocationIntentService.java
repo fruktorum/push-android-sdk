@@ -3,12 +3,9 @@ package com.devinotele.devinosdk.sdk;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-
 import androidx.annotation.NonNull;
 import androidx.core.app.JobIntentService;
-
 import java.util.HashMap;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
@@ -45,5 +42,4 @@ public class DevinoLocationIntentService extends JobIntentService {
         DevinoLocationReceiver.setAlarm(getApplicationContext(), interval);
         stopSelf();
     }
-
 }

@@ -3,6 +3,7 @@ package com.devinotele.devinosdk.sdk;
 import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.JsonObject;
@@ -10,6 +11,7 @@ import com.google.gson.JsonObject;
 import java.util.HashMap;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationManagerCompat;
 import io.reactivex.Observable;
 
@@ -275,6 +277,19 @@ public class DevinoSdk {
      */
     public void setDefaultNotificationIconColor(@ColorInt int color) {
         DevinoSdkPushService.defaultNotificationIconColor = color;
+    }
+
+    /**
+     * Shows UI dialog requesting user notification permission
+     *
+     * @param activity    Calling activity
+     * @param requestCode specify code to handle result in onRequestPermissionsResult() method of your Activity
+     */
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    public void requestNotificationPermission(Activity activity, Integer requestCode) {
+        RequestNotificationPermissionUseCase useCase =
+                new RequestNotificationPermissionUseCase(instance.hp, logsCallback);
+        useCase.run(activity, requestCode);
     }
 
     void hideNotification(Context context) {
