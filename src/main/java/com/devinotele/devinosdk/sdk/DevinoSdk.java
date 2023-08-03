@@ -11,6 +11,7 @@ import com.google.gson.JsonObject;
 import java.util.HashMap;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationManagerCompat;
 import io.reactivex.Observable;
@@ -292,6 +293,22 @@ public class DevinoSdk {
         useCase.run(activity, requestCode);
     }
 
+    /**
+     * Update base api url
+     *
+     * @param newBaseApiUrl New base api url
+     *
+     */
+    public void updateBaseApiUrl(@NonNull String newBaseApiUrl, Context ctx) {
+        UpdateApiBaseUrlUseCase useCase = new UpdateApiBaseUrlUseCase(instance.hp, logsCallback);
+        useCase.run(newBaseApiUrl, ctx);
+
+    }
+
+    protected String getSavedBaseUrl() {
+        return instance.hp.getSharedPrefsHelper().getString(SharedPrefsHelper.KEY_API_BASE_URL);
+    }
+
     void hideNotification(Context context) {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         notificationManager.cancelAll();
@@ -301,8 +318,12 @@ public class DevinoSdk {
         return instance.customSound;
     }
 
-    private static void handleToken(FirebaseMessaging firebaseMessaging,
-                                    DevinoLogsCallback callback, String phone, String email) {
+    private static void handleToken(
+            FirebaseMessaging firebaseMessaging,
+            DevinoLogsCallback callback,
+            String phone,
+            String email
+    ) {
         HandleTokenUseCase useCase = new HandleTokenUseCase(instance.hp, callback, phone, email);
         useCase.run(firebaseMessaging);
     }

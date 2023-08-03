@@ -13,6 +13,7 @@ class SharedPrefsHelper {
     static final String KEY_API_SECRET = "ApiSecret";
     static final String KEY_GPS_INTERVAL = "GpsInterval";
     static final String KEY_GPS_SUBSCRIPTION_ACTIVE = "GpsSubscriptionActive";
+    static final String KEY_API_BASE_URL = "ApiBaseUrl";
 
     public SharedPrefsHelper (SharedPreferences sp) {
         sharedPreferences = sp;
