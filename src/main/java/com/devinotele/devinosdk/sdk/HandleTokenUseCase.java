@@ -1,6 +1,8 @@
 package com.devinotele.devinosdk.sdk;
 
 
+import android.util.Log;
+
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.Objects;
@@ -25,7 +27,12 @@ class HandleTokenUseCase extends BaseUC {
     }
 
     void run(FirebaseMessaging firebaseMessaging) {
-        if (sharedPrefsHelper.getBoolean(SharedPrefsHelper.KEY_TOKEN_REGISTERED)) registerUser(email, phone);
+        boolean tokenRegistered = sharedPrefsHelper.getBoolean(SharedPrefsHelper.KEY_TOKEN_REGISTERED);
+        Log.d("111111", "tokenRegistered = " + tokenRegistered);
+        if (tokenRegistered) {
+            registerUser(email, phone);
+            Log.d("111111", "registerUser");
+        }
         else {
             firebaseMessaging.getToken()
                     .addOnCompleteListener(task -> {
@@ -49,6 +56,7 @@ class HandleTokenUseCase extends BaseUC {
                 .subscribe(
                         json -> {
                             sharedPrefsHelper.saveData(SharedPrefsHelper.KEY_TOKEN_REGISTERED, true);
+                            Log.d("111111", "json = " + json.toString());
                             logsCallback.onMessageLogged(event + json.toString());
                         },
                         throwable -> {

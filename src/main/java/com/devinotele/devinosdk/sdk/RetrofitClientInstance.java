@@ -1,5 +1,7 @@
 package com.devinotele.devinosdk.sdk;
 
+import android.util.Log;
+
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import retrofit2.Retrofit;
@@ -9,18 +11,26 @@ import retrofit2.converter.gson.GsonConverterFactory;
 class RetrofitClientInstance {
 
     private static Retrofit retrofit;
-    private static Retrofit firebaseRetrofit;
-    private static final String BASE_URL = "https://integrationapi.net/push/sdk/";
-    private static final String FIREBASE_URL = "https://fcm.googleapis.com/fcm/";
+    //private static Retrofit firebaseRetrofit;
+    private static volatile String BASE_URL = "https://integrationapi.net/push/sdk/";
+    //private static final String FIREBASE_URL = "https://fcm.googleapis.com/fcm/";
     private static OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 
+    public void setApiBaseUrl(String newApiBaseUrl) {
+        BASE_URL = newApiBaseUrl;
+        if (retrofit != null) retrofit = retrofit.newBuilder().baseUrl(BASE_URL).build();
+    }
 
     static Retrofit getRetrofitInstance(final String apiKey) {
         if (retrofit == null) {
 
+            String url = DevinoSdk.getInstance().getSavedBaseUrl();
+            if (url != null && !url.isEmpty()) BASE_URL = url;
+
+            Log.d("111111", "BASE_URL = " + BASE_URL);
+
             httpClient.addInterceptor(chain -> {
                 Request original = chain.request();
-
                 Request request = original.newBuilder()
                         .header("x-api-key", apiKey)
                         .header("Content-Type", "application/json")
@@ -40,7 +50,7 @@ class RetrofitClientInstance {
         return retrofit;
     }
 
-    static Retrofit getFirebaseInstance(final String pushKey) {
+    /*static Retrofit getFirebaseInstance(final String pushKey) {
         if (firebaseRetrofit == null) {
 
             httpClient.addInterceptor(chain -> {
@@ -63,7 +73,5 @@ class RetrofitClientInstance {
                     .build();
         }
         return retrofit;
-    }
-
-
+    }*/
 }
