@@ -11,11 +11,10 @@ import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-
 class DevinoNetworkRepositoryImpl implements DevinoNetworkRepository {
 
-    private RetrofitHelper retrofitHelper;
-    private volatile DevinoLogsCallback callback;
+    private final RetrofitHelper retrofitHelper;
+    private final DevinoLogsCallback callback;
     HashMap<Integer, Integer> retryMap = new HashMap<>();
 
     DevinoNetworkRepositoryImpl(String apiKey, String applicationId, String token, DevinoLogsCallback callback) {
@@ -34,7 +33,9 @@ class DevinoNetworkRepositoryImpl implements DevinoNetworkRepository {
                     callback.onMessageLogged("ERROR");
                     boolean retryCondition = error instanceof HttpException && codeToRepeat(((HttpException) error).code());
                     int retryCount = 3;
-                    if(retryMap.get(source.hashCode()) != null) retryCount = retryMap.get(source.hashCode());
+                    if (retryMap.get(source.hashCode()) != null) {
+                        retryCount = retryMap.get(source.hashCode());
+                    }
                     if (retryCount < 3 && retryCondition) {
                         retryMap.put(source.hashCode(), retryCount + 1);
                         return Observable.timer(interval, TimeUnit.SECONDS);

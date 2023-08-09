@@ -24,7 +24,6 @@ public class NotificationTrampolineActivity extends AppCompatActivity {
 
                 String action = getIntent().getStringExtra(DevinoPushReceiver.KEY_DEEPLINK);
                 String picture = getIntent().getStringExtra(DevinoPushReceiver.KEY_PICTURE);
-                String messageId = getIntent().getStringExtra(DevinoPushReceiver.KEY_PUSH_ID);
 
                 Intent startMain = new Intent(Intent.ACTION_VIEW);
 

@@ -14,7 +14,6 @@ import retrofit2.HttpException;
 
 class HandleTokenUseCase extends BaseUC {
 
-
     private DevinoLogsCallback logsCallback;
     private String phone, email;
     private String event = "register token (put) ";
