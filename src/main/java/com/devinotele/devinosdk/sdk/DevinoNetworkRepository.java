@@ -39,7 +39,4 @@ interface DevinoNetworkRepository {
             HashMap<String, Object> customData
     );
     void updateToken(String token);
-
 }
-
-
