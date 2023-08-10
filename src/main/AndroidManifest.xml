@@ -12,6 +12,12 @@
     <application
         android:usesCleartextTraffic="true">
 
+        <activity
+            android:name=".sdk.NotificationTrampolineActivity"
+            android:theme="@style/Theme.Transparent"
+            android:noHistory="true">
+        </activity>
+
         <receiver android:name=".sdk.DevinoPushReceiver" />
 
         <receiver android:name=".sdk.DevinoCancelReceiver" />

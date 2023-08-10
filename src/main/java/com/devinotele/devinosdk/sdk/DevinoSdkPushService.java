@@ -15,7 +15,6 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
-
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
@@ -142,6 +141,7 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
         broadcastIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         Intent activityIntent = new Intent(getApplicationContext(), NotificationTrampolineActivity.class);
+        activityIntent.putExtra(DevinoPushReceiver.KEY_PUSH_ID, pushId);
         if (action != null) {
             activityIntent.putExtra(DevinoPushReceiver.KEY_DEEPLINK, action);
         } else {
@@ -346,7 +346,6 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
         void setDeeplink(String deeplink) {
             this.deeplink = deeplink;
         }
-
     }
 
     protected static class CustomData {
