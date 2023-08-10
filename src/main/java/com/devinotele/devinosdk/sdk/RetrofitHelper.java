@@ -73,10 +73,18 @@ class RetrofitHelper {
         return devinoApi.appStart(token, body);
     }
 
-    Single<JsonObject> customEvent(String eventName, HashMap<String, Object> eventData) {
+    Single<JsonObject> customEvent(
+            String eventName,
+            HashMap<String, Object> eventData,
+            HashMap<String, Object> customData
+    ) {
         HashMap<String, Object> body = getGenericBody();
         body.put("eventName", eventName);
         body.put("eventData", eventData);
+        body.put("platform", PLATFORM_KEY);
+        if (customData != null) {
+            body.put("customData", customData);
+        }
         return devinoApi.event(token, body);
     }
 

@@ -22,7 +22,11 @@ interface DevinoNetworkRepository {
             Boolean subscribed,
             HashMap<String, Object> customData
     );
-    Observable<JsonObject> customEvent(String eventName, HashMap<String, Object> eventData);
+    Observable<JsonObject> customEvent(
+            String eventName,
+            HashMap<String, Object> eventData,
+            HashMap<String, Object> customData
+    );
     Single<JsonObject> geo(Double latitude, Double longitude);
     Observable<JsonObject> pushEvent(String pushId, String actionType, String actionId);
     void updateToken(String token);

@@ -128,7 +128,7 @@ public class DevinoSdk {
     }
 
     /**
-     * Send any custon event
+     * Send any custom event
      *
      * @param eventName Event name
      * @param eventData Key-Value typed data

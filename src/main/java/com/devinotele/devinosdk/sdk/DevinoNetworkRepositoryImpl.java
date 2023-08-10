@@ -92,8 +92,12 @@ class DevinoNetworkRepositoryImpl implements DevinoNetworkRepository {
     }
 
     @Override
-    public Observable<JsonObject> customEvent(String eventName, HashMap<String, Object> eventData) {
-        return retryOnHttpError(retrofitHelper.customEvent(eventName, eventData));
+    public Observable<JsonObject> customEvent(
+            String eventName,
+            HashMap<String, Object> eventData,
+            HashMap<String, Object> customData
+    ) {
+        return retryOnHttpError(retrofitHelper.customEvent(eventName, eventData, customData));
     }
 
     @Override
