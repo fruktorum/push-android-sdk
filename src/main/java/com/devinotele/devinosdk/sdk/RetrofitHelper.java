@@ -99,12 +99,21 @@ class RetrofitHelper {
         return devinoApi.geo(token, body);
     }
 
-    Single<JsonObject> pushEvent(String pushId, String actionType, String actionId) {
+    Single<JsonObject> pushEvent(
+            String pushId,
+            String actionType,
+            String actionId,
+            HashMap<String, Object> customData
+    ) {
         HashMap<String, Object> body = getGenericBody();
         body.put("pushToken", token);
         body.put("pushId", pushId);
         body.put("actionType", actionType);
         body.put("actionId", actionId);
+        body.put("platform", PLATFORM_KEY);
+        if (customData != null) {
+            body.put("customData", customData);
+        }
         return devinoApi.pushEvent(body);
     }
 

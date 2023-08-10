@@ -112,8 +112,13 @@ class DevinoNetworkRepositoryImpl implements DevinoNetworkRepository {
     }
 
     @Override
-    public Observable<JsonObject> pushEvent(String pushId, String actionType, String actionId) {
-        return retryOnHttpError(retrofitHelper.pushEvent(pushId, actionType, actionId));
+    public Observable<JsonObject> pushEvent(
+            String pushId,
+            String actionType,
+            String actionId,
+            HashMap<String, Object> customData
+    ) {
+        return retryOnHttpError(retrofitHelper.pushEvent(pushId, actionType, actionId, customData));
     }
 
     @Override

@@ -32,7 +32,12 @@ interface DevinoNetworkRepository {
             Double longitude,
             HashMap<String, Object> customData
     );
-    Observable<JsonObject> pushEvent(String pushId, String actionType, String actionId);
+    Observable<JsonObject> pushEvent(
+            String pushId,
+            String actionType,
+            String actionId,
+            HashMap<String, Object> customData
+    );
     void updateToken(String token);
 
 }
