@@ -1,5 +1,6 @@
 package com.devinotele.devinosdk.sdk;
 
+import java.util.HashMap;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.HttpException;
@@ -16,8 +17,10 @@ class SendGeoUseCase extends BaseUC {
 
     void run(Double latitude, Double longitude) {
         String token = sharedPrefsHelper.getString(SharedPrefsHelper.KEY_PUSH_TOKEN);
+        HashMap<String, Object> customData =
+                sharedPrefsHelper.getHashMap(SharedPrefsHelper.KEY_CUSTOM_DATA);
         if (token.length() > 0) {
-            trackSubscription(networkRepository.geo(latitude, longitude)
+            trackSubscription(networkRepository.geo(latitude, longitude, customData)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(

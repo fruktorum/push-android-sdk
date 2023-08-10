@@ -1,5 +1,6 @@
 package com.devinotele.devinosdk.sdk;
 
+import java.util.HashMap;
 import retrofit2.HttpException;
 
 class SendLocationUseCase extends BaseUC {
@@ -13,11 +14,14 @@ class SendLocationUseCase extends BaseUC {
     }
 
     void run() {
+        HashMap<String, Object> customData =
+                sharedPrefsHelper.getHashMap(SharedPrefsHelper.KEY_CUSTOM_DATA);
         trackSubscription(devinoLocationHelper.getNewLocation()
                 .flatMap(
                         location -> networkRepository.geo(
                                 location.getLatitude(),
-                                location.getLongitude()
+                                location.getLongitude(),
+                                customData
                         )
                 )
                 .subscribe(

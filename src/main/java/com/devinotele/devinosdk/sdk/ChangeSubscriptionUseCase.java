@@ -1,5 +1,6 @@
 package com.devinotele.devinosdk.sdk;
 
+import java.util.HashMap;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.HttpException;
@@ -16,10 +17,11 @@ class ChangeSubscriptionUseCase extends BaseUC {
 
     void run(Boolean subscribed) {
         String token = sharedPrefsHelper.getString(SharedPrefsHelper.KEY_PUSH_TOKEN);
-
+        HashMap<String, Object> customData =
+                sharedPrefsHelper.getHashMap(SharedPrefsHelper.KEY_CUSTOM_DATA);
         sharedPrefsHelper.saveData(SharedPrefsHelper.KEY_SUBSCRIBED, subscribed);
         if (token.length() > 0) {
-            trackSubscription(networkRepository.changeSubscription(subscribed)
+            trackSubscription(networkRepository.changeSubscription(subscribed, customData)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(

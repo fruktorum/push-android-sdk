@@ -2,6 +2,7 @@ package com.devinotele.devinosdk.sdk;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import java.util.HashMap;
 import java.util.Objects;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -24,8 +25,9 @@ class HandleTokenUseCase extends BaseUC {
     void run(FirebaseMessaging firebaseMessaging) {
         boolean tokenRegistered =
                 sharedPrefsHelper.getBoolean(SharedPrefsHelper.KEY_TOKEN_REGISTERED);
+        HashMap<String, Object> customData = sharedPrefsHelper.getHashMap(SharedPrefsHelper.KEY_CUSTOM_DATA);
         if (tokenRegistered) {
-            registerUser(email, phone);
+            registerUser(email, phone, customData);
         } else {
             firebaseMessaging.getToken()
                     .addOnCompleteListener(task -> {
@@ -40,13 +42,13 @@ class HandleTokenUseCase extends BaseUC {
                         String token = task.getResult();
                         sharedPrefsHelper.saveData(SharedPrefsHelper.KEY_PUSH_TOKEN, token);
                         DevinoSdk.getInstance().appStarted();
-                        registerUser(email, phone);
+                        registerUser(email, phone, customData);
                     });
         }
     }
 
-    private void registerUser(String email, String phone) {
-        trackSubscription(networkRepository.registerUser(email, phone)
+    private void registerUser(String email, String phone, HashMap<String, Object> customData) {
+        trackSubscription(networkRepository.registerUser(email, phone, customData)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

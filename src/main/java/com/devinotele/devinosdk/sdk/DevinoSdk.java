@@ -4,12 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
-
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.JsonObject;
-
 import java.util.HashMap;
-
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -131,7 +128,7 @@ public class DevinoSdk {
     }
 
     /**
-     * Send any custon event
+     * Send any custom event
      *
      * @param eventName Event name
      * @param eventData Key-Value typed data
@@ -305,6 +302,11 @@ public class DevinoSdk {
 
     }
 
+    public void updateToken(String pushToken) {
+        SaveTokenUseCase useCase = new SaveTokenUseCase(instance.hp, logsCallback);
+        useCase.run(pushToken);
+    }
+
     protected String getSavedBaseUrl() {
         return instance.hp.getSharedPrefsHelper().getString(SharedPrefsHelper.KEY_API_BASE_URL);
     }
@@ -341,10 +343,14 @@ public class DevinoSdk {
         return message -> System.out.println("Devino SDK event (logs are disabled).");
     }
 
-    class PushStatus {
+    protected void saveCustomDataFromPushJson(@NonNull String customData) {
+        SaveCustomDataHashMapUseCase useCase = new SaveCustomDataHashMapUseCase(instance.hp, logsCallback);
+        useCase.run(customData);
+    }
+
+    static class PushStatus {
         static final String DELIVERED = "DELIVERED";
         static final String OPENED = "OPENED";
         static final String CANCELED = "CANCELED";
     }
-
 }

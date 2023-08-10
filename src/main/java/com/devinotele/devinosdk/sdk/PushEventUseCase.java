@@ -1,5 +1,7 @@
 package com.devinotele.devinosdk.sdk;
 
+import java.util.HashMap;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.HttpException;
@@ -16,8 +18,10 @@ class PushEventUseCase extends BaseUC {
 
     void run(String pushId, String actionType, String actionId) {
         String token = sharedPrefsHelper.getString(SharedPrefsHelper.KEY_PUSH_TOKEN);
+        HashMap<String, Object> customData =
+                sharedPrefsHelper.getHashMap(SharedPrefsHelper.KEY_CUSTOM_DATA);
         if (token.length() > 0) {
-            trackSubscription(networkRepository.pushEvent(pushId, actionType, actionId)
+            trackSubscription(networkRepository.pushEvent(pushId, actionType, actionId, customData)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
@@ -58,7 +62,7 @@ class PushEventUseCase extends BaseUC {
                     )
             );
         } else {
-            logsCallback.onMessageLogged("can't send push event -> token not registered");
+            logsCallback.onMessageLogged("Can't send push event -> token not registered");
         }
     }
 }

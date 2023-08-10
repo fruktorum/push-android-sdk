@@ -14,20 +14,19 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
-
+import android.util.Log;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-
 import com.devinotele.devinosdk.R;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
-
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
@@ -36,13 +35,10 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
 
     Gson gson = new Gson();
     private final String channelId = "devino_push";
-
     @DrawableRes
     static Integer defaultNotificationIcon = R.drawable.ic_grey_circle;
-
     @ColorInt
     static Integer defaultNotificationIconColor = 0x333333;
-
     private static final int RESOURCE_NOT_FOUND = 0;
 
     @Override
@@ -51,42 +47,70 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
         if (remoteMessage.getData().size() > 0) {
 
             Map<String, String> data = remoteMessage.getData();
+            Log.d("DevinoPush", "data = " + data);
 
             String pushId = data.get("pushId");
-
             if (pushId == null) return;
 
             String image = data.get("image");
-            String icon = data.get("smallIcon");
+            String smallIcon = data.get("smallIcon");
             String iconColor = data.get("iconColor");
             String title = data.get("title");
             String body = data.get("body");
+
+            String badge = data.get("badge");
+            int badgeNumber = 0;
+            if (badge != null) {
+                badgeNumber = Integer.parseInt(badge);
+            }
+
             String action = data.get("action");
+            Log.d("DevinoPush", "action =  " + action);
+
             String buttonsJson = data.get("buttons");
             Type listType = new TypeToken<List<PushButton>>() {
             }.getType();
             List<PushButton> buttons = gson.fromJson(buttonsJson, listType);
 
-            Uri sound = DevinoSdk.getInstance().getSound();
+            String customDataString = data.get("customData");
+            if (customDataString != null) {
+                DevinoSdk.getInstance().saveCustomDataFromPushJson(customDataString);
+                Log.d("DevinoPush", "CustomDataString =  " + customDataString);
+            }
+
+            String sound = data.get("sound");
+            Uri soundUri;
+            if (sound != null) {
+                soundUri = Uri.parse(sound);
+            } else {
+                soundUri = DevinoSdk.getInstance().getSound();
+            }
+            Log.d("DevinoPush", "soundUri =  " + soundUri);
 
             boolean isSilent = "true".equalsIgnoreCase(data.get("silentPush"));
             if (!isSilent) {
                 showSimpleNotification(
                         title,
                         body,
-                        icon,
+                        smallIcon,
                         iconColor,
                         image,
                         buttons,
                         true,
-                        sound,
+                        soundUri,
                         pushId,
-                        action
+                        action,
+                        badgeNumber
                 );
             }
 
             DevinoSdk.getInstance().pushEvent(pushId, DevinoSdk.PushStatus.DELIVERED, null);
         }
+    }
+
+    public void onNewToken(@NonNull String token) {
+        super.onNewToken(token);
+        DevinoSdk.getInstance().updateToken(token);
     }
 
     @SuppressLint("NotificationTrampoline")
@@ -98,9 +122,10 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
             String largeIcon,
             List<PushButton> buttons,
             Boolean bigPicture,
-            Uri sound,
+            Uri soundUri,
             String pushId,
-            String action
+            String action,
+            Integer badgeNumber
     ) {
 
         Intent broadcastIntent = new Intent(getApplicationContext(), DevinoPushReceiver.class);
@@ -108,20 +133,16 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
         if (action != null) {
             broadcastIntent.putExtra(DevinoPushReceiver.KEY_DEEPLINK, action);
         } else {
-            broadcastIntent.putExtra(
-                    DevinoPushReceiver.KEY_DEEPLINK,
-                    DevinoPushReceiver.KEY_DEFAULT_ACTION
-            );
+            broadcastIntent.putExtra(DevinoPushReceiver.KEY_DEEPLINK, DevinoPushReceiver.KEY_DEFAULT_ACTION);
         }
-        Intent activityIntent =
-                new Intent(getApplicationContext(), NotificationTrampolineActivity.class);
+        broadcastIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        Intent activityIntent = new Intent(getApplicationContext(), NotificationTrampolineActivity.class);
+        activityIntent.putExtra(DevinoPushReceiver.KEY_PUSH_ID, pushId);
         if (action != null) {
             activityIntent.putExtra(DevinoPushReceiver.KEY_DEEPLINK, action);
         } else {
-            activityIntent.putExtra(
-                    DevinoPushReceiver.KEY_DEEPLINK,
-                    DevinoPushReceiver.KEY_DEFAULT_ACTION
-            );
+            activityIntent.putExtra(DevinoPushReceiver.KEY_DEEPLINK, DevinoPushReceiver.KEY_DEFAULT_ACTION);
         }
         activityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
@@ -162,8 +183,14 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
                 .setContentIntent(defaultPendingIntent)
                 .setDeleteIntent(deletePendingIntent)
                 .setSound(null)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setChannelId(channelId)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+
+        if (badgeNumber != null && badgeNumber > 0) {
+            builder.setNumber(badgeNumber);
+        }
 
         if (smallIcon != null) {
             builder.setSmallIcon(getIconDrawableId(getApplicationContext(), smallIcon));
@@ -174,7 +201,9 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
         if (iconColor != null) {
             try {
                 Integer color = Integer.getInteger(iconColor);
-                if (color != null) builder.setColor(color);
+                if (color != null) {
+                    builder.setColor(color);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -182,21 +211,38 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
             builder.setColor(defaultNotificationIconColor);
         }
 
+        int EXPANDED_TEXT_LENGTH = 49;
+        if (text.length() >= EXPANDED_TEXT_LENGTH) {
+            builder.setStyle(new NotificationCompat.BigTextStyle()
+                    .bigText(text));
+        }
+
+        if (largeIcon != null) {
+            Bitmap bitmap = ImageDownloader.getBitmapFromURL(largeIcon);
+            if (bigPicture) {
+                builder.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(bitmap));
+            }
+            builder.setLargeIcon(bitmap);
+        }
+
+        if (soundUri != null) {
+            playRingtone(soundUri);
+        }
+
         if (buttons != null && buttons.size() > 0) {
             for (PushButton button : buttons) {
                 if (button.text != null) {
-                    Intent buttonActivityIntent =
-                            new Intent(this, NotificationTrampolineActivity.class);
+                    Intent buttonActivityIntent = new Intent(this, NotificationTrampolineActivity.class);
                     buttonActivityIntent.putExtra(DevinoPushReceiver.KEY_DEEPLINK, button.deeplink);
-                    buttonActivityIntent.putExtra(DevinoPushReceiver.KEY_PUSH_ID, button.pictureLink);
                     buttonActivityIntent.putExtra(DevinoPushReceiver.KEY_PUSH_ID, pushId);
+                    buttonActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
-                    Intent buttonBroadcastIntent =
-                            new Intent(this, DevinoPushReceiver.class);
+                    Intent buttonBroadcastIntent = new Intent(this, DevinoPushReceiver.class);
                     buttonBroadcastIntent.putExtra(DevinoPushReceiver.KEY_DEEPLINK, button.deeplink);
-                    buttonBroadcastIntent.putExtra(DevinoPushReceiver.KEY_PICTURE, button.pictureLink);
                     buttonBroadcastIntent.putExtra(DevinoPushReceiver.KEY_PUSH_ID, pushId);
+                    buttonBroadcastIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
+                    Log.d("DevinoPush", "button.deeplink =  " + button.deeplink);
                     PendingIntent pendingIntent;
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                         pendingIntent = PendingIntent.getActivity(
@@ -219,21 +265,6 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
             }
         }
 
-        int EXPANDED_TEXT_LENGTH = 49;
-        if (text.length() >= EXPANDED_TEXT_LENGTH) {
-            builder.setStyle(new NotificationCompat.BigTextStyle()
-                    .bigText(text));
-        }
-
-        if (largeIcon != null) {
-            Bitmap bitmap = ImageDownloader.getBitmapFromURL(largeIcon);
-            if (bigPicture)
-                builder.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(bitmap));
-            builder.setLargeIcon(bitmap);
-        } else
-
-            playRingtone(sound);
-
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
                 != PackageManager.PERMISSION_GRANTED
@@ -247,10 +278,7 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
     }
 
     private void playRingtone(Uri customSound) {
-        Uri notificationSound =
-                customSound != null
-                        ? customSound
-                        : RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Uri notificationSound = customSound != null ? customSound : RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         Ringtone ringtone = RingtoneManager.getRingtone(getApplicationContext(), notificationSound);
         if (ringtone != null) {
             ringtone.play();
@@ -260,15 +288,11 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel notificationChannel =
-                    new NotificationChannel(channelId, "devino", importance);
+            NotificationChannel notificationChannel = new NotificationChannel(channelId, "devino", importance);
             notificationChannel.enableVibration(true);
-            notificationChannel.setVibrationPattern(
-                    new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400}
-            );
+            notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
             notificationChannel.setSound(null, null);
-            NotificationManager notificationManager =
-                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.createNotificationChannel(notificationChannel);
         }
     }
@@ -299,13 +323,9 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
         @SerializedName("deeplink")
         private String deeplink;
 
-        @SerializedName("picture")
-        private String pictureLink;
-
-        PushButton(String text, String deeplink, String pictureLink) {
+        PushButton(String text, String deeplink) {
             this.text = text;
             this.deeplink = deeplink;
-            this.pictureLink = pictureLink;
         }
 
         String getText() {
@@ -323,13 +343,15 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
         void setDeeplink(String deeplink) {
             this.deeplink = deeplink;
         }
+    }
 
-        String getPictureLink() {
-            return pictureLink;
-        }
+    protected static class CustomData {
+        @SerializedName("login")
+        private String login;
 
-        void setPictureLink(String pictureLink) {
-            this.pictureLink = pictureLink;
+        CustomData(String login) {
+            this.login = login;
         }
     }
+
 }

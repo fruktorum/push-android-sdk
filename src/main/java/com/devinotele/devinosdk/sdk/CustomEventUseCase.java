@@ -21,8 +21,10 @@ class CustomEventUseCase extends BaseUC {
     @SuppressLint("CheckResult")
     void run(String eventName, HashMap<String, Object> eventData) {
         String token = sharedPrefsHelper.getString(SharedPrefsHelper.KEY_PUSH_TOKEN);
+        HashMap<String, Object> customData =
+                sharedPrefsHelper.getHashMap(SharedPrefsHelper.KEY_CUSTOM_DATA);
         if (token.length() > 0) {
-            trackSubscription(networkRepository.customEvent(eventName, eventData)
+            trackSubscription(networkRepository.customEvent(eventName, eventData, customData)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
