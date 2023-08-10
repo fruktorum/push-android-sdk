@@ -101,8 +101,12 @@ class DevinoNetworkRepositoryImpl implements DevinoNetworkRepository {
     }
 
     @Override
-    public Single<JsonObject> geo( Double latitude, Double longitude) {
-        return retrofitHelper.geo(latitude, longitude)
+    public Single<JsonObject> geo(
+            Double latitude,
+            Double longitude,
+            HashMap<String, Object> customData
+    ) {
+        return retrofitHelper.geo(latitude, longitude, customData)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread());
     }

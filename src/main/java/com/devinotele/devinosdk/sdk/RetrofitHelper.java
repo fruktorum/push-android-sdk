@@ -88,10 +88,14 @@ class RetrofitHelper {
         return devinoApi.event(token, body);
     }
 
-    Single<JsonObject> geo(Double latitude, Double longitude) {
+    Single<JsonObject> geo(Double latitude, Double longitude, HashMap<String, Object> customData) {
         HashMap<String, Object> body = getGenericBody();
         body.put("latitude", latitude);
         body.put("longitude", longitude);
+        body.put("platform", PLATFORM_KEY);
+        if (customData != null) {
+            body.put("customData", customData);
+        }
         return devinoApi.geo(token, body);
     }
 

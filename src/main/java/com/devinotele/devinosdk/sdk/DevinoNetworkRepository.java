@@ -27,7 +27,11 @@ interface DevinoNetworkRepository {
             HashMap<String, Object> eventData,
             HashMap<String, Object> customData
     );
-    Single<JsonObject> geo(Double latitude, Double longitude);
+    Single<JsonObject> geo(
+            Double latitude,
+            Double longitude,
+            HashMap<String, Object> customData
+    );
     Observable<JsonObject> pushEvent(String pushId, String actionType, String actionId);
     void updateToken(String token);
 
