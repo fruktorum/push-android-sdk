@@ -1,9 +1,9 @@
 package com.devinotele.devinosdk.sdk;
 
-import retrofit2.HttpException;
-
+import java.util.Objects;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import retrofit2.HttpException;
 
 class BaseUC {
 
@@ -23,7 +23,9 @@ class BaseUC {
     String getErrorMessage(String event, HttpException error) {
         String message;
         try {
-            message = error.response().errorBody().string();
+            message = Objects.requireNonNull(
+                    Objects.requireNonNull(error.response()).errorBody()
+            ).string();
         } catch (Throwable e) {
             e.printStackTrace();
             message = error.getMessage();

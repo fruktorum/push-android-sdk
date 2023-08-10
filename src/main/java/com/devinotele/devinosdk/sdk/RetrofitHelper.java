@@ -2,20 +2,17 @@ package com.devinotele.devinosdk.sdk;
 
 import android.annotation.SuppressLint;
 import android.os.Build;
-
 import com.google.gson.JsonObject;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
-
 import io.reactivex.Single;
 
 class RetrofitHelper {
 
-    private DevinoApi devinoApi;
-    private String applicationId;
+    private final DevinoApi devinoApi;
+    private final String applicationId;
     private String token;
 
     RetrofitHelper(String apiKey, String applicationId, String token) {

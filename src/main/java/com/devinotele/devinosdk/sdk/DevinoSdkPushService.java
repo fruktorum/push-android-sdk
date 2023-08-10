@@ -14,17 +14,20 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+
 import com.devinotele.devinosdk.R;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
+
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
@@ -32,8 +35,7 @@ import java.util.Map;
 public class DevinoSdkPushService extends FirebaseMessagingService {
 
     Gson gson = new Gson();
-    private String channelId = "devino_push";
-    private final int EXPANDED_TEXT_LENGTH = 49;
+    private final String channelId = "devino_push";
 
     @DrawableRes
     static Integer defaultNotificationIcon = R.drawable.ic_grey_circle;
@@ -69,7 +71,18 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
 
             boolean isSilent = "true".equalsIgnoreCase(data.get("silentPush"));
             if (!isSilent) {
-                showSimpleNotification(title, body, icon, iconColor, image, buttons, true, sound, pushId, action);
+                showSimpleNotification(
+                        title,
+                        body,
+                        icon,
+                        iconColor,
+                        image,
+                        buttons,
+                        true,
+                        sound,
+                        pushId,
+                        action
+                );
             }
 
             DevinoSdk.getInstance().pushEvent(pushId, DevinoSdk.PushStatus.DELIVERED, null);
@@ -94,17 +107,23 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
         broadcastIntent.putExtra(DevinoPushReceiver.KEY_PUSH_ID, pushId);
         if (action != null) {
             broadcastIntent.putExtra(DevinoPushReceiver.KEY_DEEPLINK, action);
-        } else
-            broadcastIntent.putExtra(DevinoPushReceiver.KEY_DEEPLINK, DevinoPushReceiver.KEY_DEFAULT_ACTION);
-
-        Intent activityIntent = new Intent(getApplicationContext(), NotificationTrampolineActivity.class);
+        } else {
+            broadcastIntent.putExtra(
+                    DevinoPushReceiver.KEY_DEEPLINK,
+                    DevinoPushReceiver.KEY_DEFAULT_ACTION
+            );
+        }
+        Intent activityIntent =
+                new Intent(getApplicationContext(), NotificationTrampolineActivity.class);
         if (action != null) {
             activityIntent.putExtra(DevinoPushReceiver.KEY_DEEPLINK, action);
         } else {
-            activityIntent.putExtra(DevinoPushReceiver.KEY_DEEPLINK, DevinoPushReceiver.KEY_DEFAULT_ACTION);
+            activityIntent.putExtra(
+                    DevinoPushReceiver.KEY_DEEPLINK,
+                    DevinoPushReceiver.KEY_DEFAULT_ACTION
+            );
         }
         activityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
 
         Intent deleteIntent = new Intent(getApplicationContext(), DevinoCancelReceiver.class);
         deleteIntent.putExtra(DevinoPushReceiver.KEY_PUSH_ID, pushId);
@@ -166,12 +185,14 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
         if (buttons != null && buttons.size() > 0) {
             for (PushButton button : buttons) {
                 if (button.text != null) {
-                    Intent buttonActivityIntent = new Intent(this, NotificationTrampolineActivity.class);
+                    Intent buttonActivityIntent =
+                            new Intent(this, NotificationTrampolineActivity.class);
                     buttonActivityIntent.putExtra(DevinoPushReceiver.KEY_DEEPLINK, button.deeplink);
                     buttonActivityIntent.putExtra(DevinoPushReceiver.KEY_PUSH_ID, button.pictureLink);
                     buttonActivityIntent.putExtra(DevinoPushReceiver.KEY_PUSH_ID, pushId);
 
-                    Intent buttonBroadcastIntent = new Intent(this, DevinoPushReceiver.class);
+                    Intent buttonBroadcastIntent =
+                            new Intent(this, DevinoPushReceiver.class);
                     buttonBroadcastIntent.putExtra(DevinoPushReceiver.KEY_DEEPLINK, button.deeplink);
                     buttonBroadcastIntent.putExtra(DevinoPushReceiver.KEY_PICTURE, button.pictureLink);
                     buttonBroadcastIntent.putExtra(DevinoPushReceiver.KEY_PUSH_ID, pushId);
@@ -198,6 +219,7 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
             }
         }
 
+        int EXPANDED_TEXT_LENGTH = 49;
         if (text.length() >= EXPANDED_TEXT_LENGTH) {
             builder.setStyle(new NotificationCompat.BigTextStyle()
                     .bigText(text));
@@ -225,9 +247,12 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
     }
 
     private void playRingtone(Uri customSound) {
-        Uri notificationSound = customSound != null ? customSound : RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Uri notificationSound =
+                customSound != null
+                        ? customSound
+                        : RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         Ringtone ringtone = RingtoneManager.getRingtone(getApplicationContext(), notificationSound);
-        if(ringtone != null) {
+        if (ringtone != null) {
             ringtone.play();
         }
     }
@@ -235,11 +260,15 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel notificationChannel = new NotificationChannel(channelId, "devino", importance);
+            NotificationChannel notificationChannel =
+                    new NotificationChannel(channelId, "devino", importance);
             notificationChannel.enableVibration(true);
-            notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+            notificationChannel.setVibrationPattern(
+                    new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400}
+            );
             notificationChannel.setSound(null, null);
-            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationManager notificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.createNotificationChannel(notificationChannel);
         }
     }

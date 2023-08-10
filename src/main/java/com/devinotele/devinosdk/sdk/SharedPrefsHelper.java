@@ -5,9 +5,7 @@ import android.content.SharedPreferences;
 class SharedPrefsHelper {
 
     private static SharedPreferences sharedPreferences;
-    static final String SP_NAME = "DevinoSdkSP";
     static final String KEY_TOKEN_REGISTERED = "TokenRegistered";
-    static final String KEY_REGISTERATION_ATTEMPT = "RegAttempt";
     static final String KEY_PUSH_TOKEN = "PushToken";
     static final String KEY_SUBSCRIBED = "Subscribed";
     static final String KEY_API_SECRET = "ApiSecret";
@@ -62,6 +60,4 @@ class SharedPrefsHelper {
     private SharedPreferences.Editor getEditor() {
         return sharedPreferences.edit();
     }
-
 }
-

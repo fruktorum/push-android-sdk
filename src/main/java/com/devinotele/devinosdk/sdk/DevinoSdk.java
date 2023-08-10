@@ -217,7 +217,7 @@ public class DevinoSdk {
      */
     public void subscribeGeo(Context context, int intervalMinutes) {
         unsubscribeGeo(context);
-        SubscribeLocationsUseCase useCase = new SubscribeLocationsUseCase(instance.hp, logsCallback);
+        SubscribeLocationsUseCase useCase = new SubscribeLocationsUseCase(instance.hp);
         useCase.run(context, intervalMinutes);
     }
 
@@ -227,7 +227,7 @@ public class DevinoSdk {
      * @param context -
      */
     public void unsubscribeGeo(Context context) {
-        UnsubscribeLocationsUseCase useCase = new UnsubscribeLocationsUseCase(instance.hp, logsCallback);
+        UnsubscribeLocationsUseCase useCase = new UnsubscribeLocationsUseCase(instance.hp);
         useCase.run(context);
     }
 

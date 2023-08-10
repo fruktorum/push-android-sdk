@@ -1,7 +1,6 @@
 package com.devinotele.devinosdk.sdk;
 
 import com.google.gson.JsonObject;
-import retrofit2.HttpException;
 
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
@@ -10,15 +9,20 @@ import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
-
+import retrofit2.HttpException;
 
 class DevinoNetworkRepositoryImpl implements DevinoNetworkRepository {
 
-    private RetrofitHelper retrofitHelper;
-    private volatile DevinoLogsCallback callback;
+    private final RetrofitHelper retrofitHelper;
+    private final DevinoLogsCallback callback;
     HashMap<Integer, Integer> retryMap = new HashMap<>();
 
-    DevinoNetworkRepositoryImpl(String apiKey, String applicationId, String token, DevinoLogsCallback callback) {
+    DevinoNetworkRepositoryImpl(
+            String apiKey,
+            String applicationId,
+            String token,
+            DevinoLogsCallback callback
+    ) {
         retrofitHelper = new RetrofitHelper(apiKey, applicationId, token);
         this.callback = callback;
     }
@@ -32,9 +36,14 @@ class DevinoNetworkRepositoryImpl implements DevinoNetworkRepository {
         return source.retryWhen(errors ->
                 errors.flatMap(error -> {
                     callback.onMessageLogged("ERROR");
-                    boolean retryCondition = error instanceof HttpException && codeToRepeat(((HttpException) error).code());
+                    boolean retryCondition =
+                            error instanceof HttpException && codeToRepeat(
+                                    ((HttpException) error).code()
+                            );
                     int retryCount = 3;
-                    if(retryMap.get(source.hashCode()) != null) retryCount = retryMap.get(source.hashCode());
+                    if (retryMap.get(source.hashCode()) != null) {
+                        retryCount = retryMap.get(source.hashCode());
+                    }
                     if (retryCount < 3 && retryCondition) {
                         retryMap.put(source.hashCode(), retryCount + 1);
                         return Observable.timer(interval, TimeUnit.SECONDS);
@@ -46,7 +55,7 @@ class DevinoNetworkRepositoryImpl implements DevinoNetworkRepository {
     }
 
     private Boolean codeToRepeat(int errorCode) {
-        return errorCode != 200 && !(errorCode >=400 && errorCode <= 404);
+        return errorCode != 200 && !(errorCode >= 400 && errorCode <= 404);
     }
 
     private <T> Observable<T> retryOnHttpError(Single<T> source) {
@@ -59,7 +68,11 @@ class DevinoNetworkRepositoryImpl implements DevinoNetworkRepository {
     }
 
     @Override
-    public Observable<JsonObject> registerUser(String email, String phone, HashMap<String, Object> customData) {
+    public Observable<JsonObject> registerUser(
+            String email,
+            String phone,
+            HashMap<String, Object> customData
+    ) {
         return retryOnHttpError(retrofitHelper.registerUser(email, phone, customData));
     }
 
@@ -79,7 +92,10 @@ class DevinoNetworkRepositoryImpl implements DevinoNetworkRepository {
     }
 
     @Override
-    public Observable<JsonObject> customEvent(String eventName, HashMap<String, Object> eventData) {
+    public Observable<JsonObject> customEvent(
+            String eventName,
+            HashMap<String, Object> eventData
+    ) {
         return retryOnHttpError(retrofitHelper.customEvent(eventName, eventData));
     }
 

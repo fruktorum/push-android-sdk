@@ -5,8 +5,11 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.devinotele.devinosdk.R;
+
 import java.util.Arrays;
 
 public class NotificationTrampolineActivity extends AppCompatActivity {
@@ -31,11 +34,16 @@ public class NotificationTrampolineActivity extends AppCompatActivity {
                 try {
                     startMain.setData(Uri.parse(action));
                     startMain.putExtra(DevinoPushReceiver.KEY_PICTURE, picture);
-                    startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    startMain.setFlags(
+                            Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    );
                     this.startActivity(startMain);
                 } catch (Throwable e) {
                     e.printStackTrace();
-                    Log.d("DevinoPush", "e.localizedMessage =  " + e.getLocalizedMessage());
+                    Log.d(
+                            "DevinoPush",
+                            "e.localizedMessage =  " + e.getLocalizedMessage()
+                    );
                 }
                 finish();
             }
