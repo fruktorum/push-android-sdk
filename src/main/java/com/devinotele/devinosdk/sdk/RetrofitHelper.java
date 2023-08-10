@@ -46,11 +46,16 @@ class RetrofitHelper {
         return devinoApi.getSubscriptionStatus(token, applicationId);
     }
 
-    Single<JsonObject> appStarted(Boolean subscribed, String appVersion) {
+    Single<JsonObject> appStarted(
+            Boolean subscribed,
+            String appVersion,
+            HashMap<String, Object> customData
+    ) {
         HashMap<String, Object> body = getGenericBody();
-        body = addCustomData(body);
+        body = addUserData(body);
         body.put("appVersion", appVersion);
         body.put("subscribed", subscribed);
+        body.put("customData", customData);
         return devinoApi.appStart(token, body);
     }
 
@@ -94,7 +99,7 @@ class RetrofitHelper {
         return body;
     }
 
-    HashMap<String, Object> addCustomData(HashMap<String, Object> body) {
+    HashMap<String, Object> addUserData(HashMap<String, Object> body) {
         body.put("platform", "ANDROID");
         body.put("osVersion", String.valueOf(Build.VERSION.SDK_INT));
         body.put("language", Locale.getDefault().getISO3Language().substring(0, 2));

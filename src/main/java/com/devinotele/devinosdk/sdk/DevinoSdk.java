@@ -343,6 +343,11 @@ public class DevinoSdk {
         return message -> System.out.println("Devino SDK event (logs are disabled).");
     }
 
+    protected void saveCustomDataFromPushJson(@NonNull String customData) {
+        SaveCustomDataHashMapUseCase useCase = new SaveCustomDataHashMapUseCase(instance.hp, logsCallback);
+        useCase.run(customData);
+    }
+
     static class PushStatus {
         static final String DELIVERED = "DELIVERED";
         static final String OPENED = "OPENED";

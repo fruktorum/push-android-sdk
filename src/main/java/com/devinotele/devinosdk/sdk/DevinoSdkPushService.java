@@ -72,13 +72,10 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
             }.getType();
             List<PushButton> buttons = gson.fromJson(buttonsJson, listType);
 
-            String customDataJson = data.get("customData");
-            if (customDataJson != null) {
-                Type customDataType = new TypeToken<CustomData>() {
-                }.getType();
-                CustomData customData = gson.fromJson(customDataJson, customDataType);
-                assert customData != null;
-                Log.d("DevinoPush", "customData.login =  " + customData.login);
+            String customDataString = data.get("customData");
+            if (customDataString != null) {
+                DevinoSdk.getInstance().saveCustomDataFromPushJson(customDataString);
+                Log.d("DevinoPush", "CustomDataString =  " + customDataString);
             }
 
             String sound = data.get("sound");

@@ -17,7 +17,12 @@ class DevinoNetworkRepositoryImpl implements DevinoNetworkRepository {
     private final DevinoLogsCallback callback;
     HashMap<Integer, Integer> retryMap = new HashMap<>();
 
-    DevinoNetworkRepositoryImpl(String apiKey, String applicationId, String token, DevinoLogsCallback callback) {
+    DevinoNetworkRepositoryImpl(
+            String apiKey,
+            String applicationId,
+            String token,
+            DevinoLogsCallback callback
+    ) {
         retrofitHelper = new RetrofitHelper(apiKey, applicationId, token);
         this.callback = callback;
     }
@@ -31,7 +36,8 @@ class DevinoNetworkRepositoryImpl implements DevinoNetworkRepository {
         return source.retryWhen(errors ->
                 errors.flatMap(error -> {
                     callback.onMessageLogged("ERROR");
-                    boolean retryCondition = error instanceof HttpException && codeToRepeat(((HttpException) error).code());
+                    boolean retryCondition = error instanceof HttpException &&
+                            codeToRepeat(((HttpException) error).code());
                     int retryCount = 3;
                     if (retryMap.get(source.hashCode()) != null) {
                         retryCount = retryMap.get(source.hashCode());
@@ -60,7 +66,11 @@ class DevinoNetworkRepositoryImpl implements DevinoNetworkRepository {
     }
 
     @Override
-    public Observable<JsonObject> registerUser(String email, String phone, HashMap<String, Object> customData) {
+    public Observable<JsonObject> registerUser(
+            String email,
+            String phone,
+            HashMap<String, Object> customData
+    ) {
         return retryOnHttpError(retrofitHelper.registerUser(email, phone, customData));
     }
 
@@ -75,8 +85,12 @@ class DevinoNetworkRepositoryImpl implements DevinoNetworkRepository {
     }
 
     @Override
-    public Observable<JsonObject> appStarted(String appVersion, Boolean subscribed) {
-        return retryOnHttpError(retrofitHelper.appStarted(subscribed, appVersion));
+    public Observable<JsonObject> appStarted(
+            String appVersion,
+            Boolean subscribed,
+            HashMap<String, Object> customData
+    ) {
+        return retryOnHttpError(retrofitHelper.appStarted(subscribed, appVersion, customData));
     }
 
     @Override
