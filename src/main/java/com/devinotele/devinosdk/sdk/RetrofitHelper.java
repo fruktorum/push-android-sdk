@@ -44,9 +44,13 @@ class RetrofitHelper {
         return devinoApi.registerUser(token, body);
     }
 
-    Single<JsonObject> changeSubscription (Boolean subscribed) {
+    Single<JsonObject> changeSubscription (Boolean subscribed, HashMap<String, Object> customData) {
         HashMap<String, Object> body = getGenericBody();
         body.put("subscribed", subscribed);
+        body.put("platform", PLATFORM_KEY);
+        if (customData != null) {
+            body.put("customData", customData);
+        }
         return devinoApi.subscription(token, body);
     }
 

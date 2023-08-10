@@ -70,8 +70,11 @@ class DevinoNetworkRepositoryImpl implements DevinoNetworkRepository {
     }
 
     @Override
-    public Observable<JsonObject> changeSubscription(Boolean subscribed) {
-        return retryOnHttpError(retrofitHelper.changeSubscription(subscribed));
+    public Observable<JsonObject> changeSubscription(
+            Boolean subscribed,
+            HashMap<String, Object> customData
+    ) {
+        return retryOnHttpError(retrofitHelper.changeSubscription(subscribed, customData));
     }
 
     @Override

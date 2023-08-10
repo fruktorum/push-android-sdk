@@ -12,7 +12,10 @@ interface DevinoNetworkRepository {
             String phone,
             HashMap<String, Object> customData
     );
-    Observable<JsonObject> changeSubscription(Boolean subscribed);
+    Observable<JsonObject> changeSubscription(
+            Boolean subscribed,
+            HashMap<String, Object> customData
+    );
     Observable<JsonObject> getSubscriptionStatus();
     Observable<JsonObject> appStarted(
             String appVersion,
