@@ -12,7 +12,6 @@ interface DevinoNetworkRepository {
             String phone,
             HashMap<String, Object> customData
     );
-    Observable<JsonObject> registerUser(String email, String phone);
     Observable<JsonObject> changeSubscription(Boolean subscribed);
     Observable<JsonObject> getSubscriptionStatus();
     Observable<JsonObject> appStarted(

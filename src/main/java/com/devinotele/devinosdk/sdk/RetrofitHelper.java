@@ -17,6 +17,7 @@ class RetrofitHelper {
     private DevinoApi devinoApi;
     private String applicationId;
     private String token;
+    static final String PLATFORM_KEY = "ANDROID";
 
     RetrofitHelper(String apiKey, String applicationId, String token) {
         devinoApi = RetrofitClientInstance.getRetrofitInstance(apiKey).create(DevinoApi.class);
@@ -28,11 +29,18 @@ class RetrofitHelper {
         this.token = token;
     }
 
-    Single<JsonObject> registerUser(String email, String phone, HashMap<String, Object> customData) {
+    Single<JsonObject> registerUser(
+            String email,
+            String phone,
+            HashMap<String, Object> customData
+    ) {
         HashMap<String, Object> body = getGenericBody();
         body.put("email", email);
         body.put("phone", phone);
-        if (customData != null) body.put("customData", customData);
+        body.put("platform", PLATFORM_KEY);
+        if (customData != null) {
+            body.put("customData", customData);
+        }
         return devinoApi.registerUser(token, body);
     }
 
@@ -55,7 +63,9 @@ class RetrofitHelper {
         body = addUserData(body);
         body.put("appVersion", appVersion);
         body.put("subscribed", subscribed);
-        body.put("customData", customData);
+        if (customData != null) {
+            body.put("customData", customData);
+        }
         return devinoApi.appStart(token, body);
     }
 
@@ -100,7 +110,7 @@ class RetrofitHelper {
     }
 
     HashMap<String, Object> addUserData(HashMap<String, Object> body) {
-        body.put("platform", "ANDROID");
+        body.put("platform", PLATFORM_KEY);
         body.put("osVersion", String.valueOf(Build.VERSION.SDK_INT));
         body.put("language", Locale.getDefault().getISO3Language().substring(0, 2));
         return body;

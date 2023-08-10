@@ -61,11 +61,6 @@ class DevinoNetworkRepositoryImpl implements DevinoNetworkRepository {
     }
 
     @Override
-    public Observable<JsonObject> registerUser(String email, String phone) {
-        return registerUser(email, phone, null);
-    }
-
-    @Override
     public Observable<JsonObject> registerUser(
             String email,
             String phone,
