@@ -24,11 +24,11 @@ class RequestNotificationPermissionUseCase extends BaseUC {
                 != PackageManager.PERMISSION_GRANTED
         ) {
             ActivityCompat.requestPermissions(
-                    activity, new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                    activity, new String[] {Manifest.permission.POST_NOTIFICATIONS},
                     requestCode
             );
         } else {
-            logsCallback.onMessageLogged("Permission has already been granted");
+            logsCallback.onMessageLogged("Notification permission has already been granted");
         }
     }
 }

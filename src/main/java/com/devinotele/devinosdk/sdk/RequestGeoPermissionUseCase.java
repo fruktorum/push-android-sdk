@@ -27,7 +27,7 @@ class RequestGeoPermissionUseCase extends BaseUC {
 
 
         } else {
-            logsCallback.onMessageLogged("Permission has already been granted");
+            logsCallback.onMessageLogged("Geo permission has already been granted");
         }
     }
 }
