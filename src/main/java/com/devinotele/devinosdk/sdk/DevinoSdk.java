@@ -27,21 +27,18 @@ import io.reactivex.Observable;
 public class DevinoSdk {
 
     private static DevinoSdk instance;
-    //private String applicationKey;
-    private String applicationId;
     private String appVersion;
-    private Boolean isInitedProperly;
     private HelpersPackage hp;
     private FirebaseMessaging firebaseMessaging;
-    private Integer geoFrequency;
-    private Integer geoMode;
     private DevinoLogsCallback logsCallback = getEmptyCallback();
     private Uri customSound;
 
     public static synchronized DevinoSdk getInstance() throws IllegalStateException {
         if (instance != null) return instance;
         else
-            throw new IllegalStateException("Devino SDK was not initialized properly. Use DevinoSdk.Builder to init SDK.");
+            throw new IllegalStateException(
+                    "Devino SDK was not initialized properly. Use DevinoSdk.Builder to init SDK."
+            );
     }
 
     /**
@@ -63,15 +60,12 @@ public class DevinoSdk {
         }
 
         public void build() {
-            //instance.applicationKey = key;
-            instance.applicationId = applicationId;
             instance.appVersion = appVersion;
             instance.hp = new HelpersPackage();
             instance.hp.setSharedPrefsHelper(new SharedPrefsHelper(ctx.getSharedPreferences("", Context.MODE_PRIVATE)));
             instance.hp.setNotificationsHelper(new NotificationsHelper(ctx));
             instance.hp.setDevinoLocationHelper(new DevinoLocationHelper(ctx));
             instance.firebaseMessaging = firebaseMessaging;
-            instance.isInitedProperly = true;
             instance.hp.getSharedPrefsHelper().saveData(SharedPrefsHelper.KEY_API_SECRET, key);
             instance.hp.setNetworkRepository(new DevinoNetworkRepositoryImpl(
                             key,
