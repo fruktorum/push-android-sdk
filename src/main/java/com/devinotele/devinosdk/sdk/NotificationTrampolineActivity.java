@@ -5,8 +5,11 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.devinotele.devinosdk.R;
+
 import java.util.Arrays;
 
 public class NotificationTrampolineActivity extends AppCompatActivity {
@@ -29,8 +32,8 @@ public class NotificationTrampolineActivity extends AppCompatActivity {
                 try {
                     startMain.setData(Uri.parse(action));
                     startMain.setFlags(
-                            Intent.FLAG_ACTIVITY_NEW_TASK
-                                    | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                            Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    );
                     this.startActivity(startMain);
                 } catch (Throwable e) {
                     e.printStackTrace();

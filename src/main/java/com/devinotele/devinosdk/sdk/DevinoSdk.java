@@ -4,13 +4,17 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.gson.JsonObject;
-import java.util.HashMap;
+
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationManagerCompat;
+
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.gson.JsonObject;
+
+import java.util.HashMap;
+
 import io.reactivex.Observable;
 
 /**
@@ -23,21 +27,18 @@ import io.reactivex.Observable;
 public class DevinoSdk {
 
     private static DevinoSdk instance;
-    private String applicationKey;
-    private String applicationId;
     private String appVersion;
-    private Boolean isInitedProperly;
     private HelpersPackage hp;
     private FirebaseMessaging firebaseMessaging;
-    private Integer geoFrequency;
-    private Integer geoMode;
     private DevinoLogsCallback logsCallback = getEmptyCallback();
     private Uri customSound;
 
     public static synchronized DevinoSdk getInstance() throws IllegalStateException {
         if (instance != null) return instance;
         else
-            throw new IllegalStateException("Devino SDK was not initialized properly. Use DevinoSdk.Builder to init SDK.");
+            throw new IllegalStateException(
+                    "Devino SDK was not initialized properly. Use DevinoSdk.Builder to init SDK."
+            );
     }
 
     /**
@@ -59,15 +60,12 @@ public class DevinoSdk {
         }
 
         public void build() {
-            instance.applicationKey = key;
-            instance.applicationId = applicationId;
             instance.appVersion = appVersion;
             instance.hp = new HelpersPackage();
             instance.hp.setSharedPrefsHelper(new SharedPrefsHelper(ctx.getSharedPreferences("", Context.MODE_PRIVATE)));
             instance.hp.setNotificationsHelper(new NotificationsHelper(ctx));
             instance.hp.setDevinoLocationHelper(new DevinoLocationHelper(ctx));
             instance.firebaseMessaging = firebaseMessaging;
-            instance.isInitedProperly = true;
             instance.hp.getSharedPrefsHelper().saveData(SharedPrefsHelper.KEY_API_SECRET, key);
             instance.hp.setNetworkRepository(new DevinoNetworkRepositoryImpl(
                             key,
@@ -190,17 +188,6 @@ public class DevinoSdk {
     }
 
     /**
-     * Shows UI dialog requesting user geo permission
-     *
-     * @param activity    Calling activity
-     * @param requestCode specify code to handle result in onRequestPermissionsResult() method of your Activity
-     */
-    public void requestGeoPermission(Activity activity, int requestCode) {
-        RequestGeoPermissionUseCase useCase = new RequestGeoPermissionUseCase(instance.hp, logsCallback);
-        useCase.run(activity, requestCode);
-    }
-
-    /**
      * Sends user location repeatedely in given interval (minutes)
      * Updates stop on phone reboot (you need to call this function once again after reboot)
      * <p>
@@ -214,7 +201,7 @@ public class DevinoSdk {
      */
     public void subscribeGeo(Context context, int intervalMinutes) {
         unsubscribeGeo(context);
-        SubscribeLocationsUseCase useCase = new SubscribeLocationsUseCase(instance.hp, logsCallback);
+        SubscribeLocationsUseCase useCase = new SubscribeLocationsUseCase(instance.hp);
         useCase.run(context, intervalMinutes);
     }
 
@@ -224,7 +211,7 @@ public class DevinoSdk {
      * @param context -
      */
     public void unsubscribeGeo(Context context) {
-        UnsubscribeLocationsUseCase useCase = new UnsubscribeLocationsUseCase(instance.hp, logsCallback);
+        UnsubscribeLocationsUseCase useCase = new UnsubscribeLocationsUseCase(instance.hp);
         useCase.run(context);
     }
 
@@ -291,10 +278,33 @@ public class DevinoSdk {
     }
 
     /**
+     * Shows UI dialog requesting user geo permission
+     *
+     * @param activity    Calling activity
+     * @param requestCode specify code to handle result in onRequestPermissionsResult() method of your Activity
+     */
+    public void requestGeoPermission(Activity activity, int requestCode) {
+        RequestGeoPermissionUseCase useCase = new RequestGeoPermissionUseCase(instance.hp, logsCallback);
+        useCase.run(activity, requestCode);
+    }
+
+    /**
+     * Shows UI dialog requesting user geo and notification permissions
+     *
+     * @param activity    Calling activity
+     * @param requestCode specify code to handle result in onRequestPermissionsResult() method of your Activity
+     */
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    public void requestGeoAndNotificationPermissions(Activity activity, int requestCode) {
+        RequestGeoAndNotificationPermissionUseCase useCase =
+                new RequestGeoAndNotificationPermissionUseCase(instance.hp, logsCallback);
+        useCase.run(activity, requestCode);
+    }
+
+    /**
      * Update base api url
      *
      * @param newBaseApiUrl New base api url
-     *
      */
     public void updateBaseApiUrl(@NonNull String newBaseApiUrl, Context ctx) {
         UpdateApiBaseUrlUseCase useCase = new UpdateApiBaseUrlUseCase(instance.hp, logsCallback);

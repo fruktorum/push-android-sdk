@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Build;
+
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -23,11 +24,11 @@ class RequestNotificationPermissionUseCase extends BaseUC {
                 != PackageManager.PERMISSION_GRANTED
         ) {
             ActivityCompat.requestPermissions(
-                    activity, new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                    activity, new String[] {Manifest.permission.POST_NOTIFICATIONS},
                     requestCode
             );
         } else {
-            logsCallback.onMessageLogged("Permission has already been granted");
+            logsCallback.onMessageLogged("Notification permission has already been granted");
         }
     }
 }

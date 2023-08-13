@@ -7,8 +7,8 @@ import retrofit2.HttpException;
 
 class ChangeSubscriptionUseCase extends BaseUC {
 
-    private DevinoLogsCallback logsCallback;
-    private String eventTemplate = "set subscribed (%s)";
+    private final DevinoLogsCallback logsCallback;
+    private final String eventTemplate = "Set subscribed (%s)";
 
     ChangeSubscriptionUseCase(HelpersPackage hp, DevinoLogsCallback callback) {
         super(hp);
@@ -25,17 +25,34 @@ class ChangeSubscriptionUseCase extends BaseUC {
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            json -> logsCallback.onMessageLogged(String.format(eventTemplate, subscribed.toString()) + " -> " + json.toString()),
+                            json -> logsCallback.onMessageLogged(
+                                    String.format(
+                                            eventTemplate,
+                                            subscribed.toString()) + " -> " + json.toString()
+                            ),
                             throwable -> {
                                 if (throwable instanceof HttpException)
-                                    logsCallback.onMessageLogged(getErrorMessage(String.format(eventTemplate, subscribed.toString()), ((HttpException) throwable)));
+                                    logsCallback.onMessageLogged(
+                                            getErrorMessage(
+                                                    String.format(
+                                                            eventTemplate,
+                                                            subscribed.toString()
+                                                    ),
+                                                    ((HttpException) throwable)
+                                            )
+                                    );
                                 else
-                                    logsCallback.onMessageLogged(String.format(eventTemplate, subscribed.toString()) + " -> " + throwable.getMessage());
-
+                                    logsCallback.onMessageLogged(
+                                            String.format(
+                                                    eventTemplate,
+                                                    subscribed.toString()
+                                            ) + " -> " + throwable.getMessage()
+                                    );
                             }
                     )
             );
+        } else {
+            logsCallback.onMessageLogged("Can't set subscribed -> token not registered");
         }
-        else logsCallback.onMessageLogged("Can't set subscribed -> token not registered");
     }
 }

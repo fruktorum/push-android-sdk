@@ -9,8 +9,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
-    <application
-        android:usesCleartextTraffic="true">
+    <application android:usesCleartextTraffic="true">
 
         <activity
             android:name=".sdk.NotificationTrampolineActivity"
@@ -34,9 +33,11 @@
             android:name=".sdk.DevinoSdkPushService"
             android:enabled="true"
             android:exported="true">
+
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
+            
         </service>
 
         <service
@@ -45,4 +46,5 @@
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
     </application>
+
 </manifest>

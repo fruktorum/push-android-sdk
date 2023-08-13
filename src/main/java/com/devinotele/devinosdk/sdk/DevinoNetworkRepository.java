@@ -1,7 +1,9 @@
 package com.devinotele.devinosdk.sdk;
 
 import com.google.gson.JsonObject;
+
 import java.util.HashMap;
+
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
@@ -12,11 +14,13 @@ interface DevinoNetworkRepository {
             String phone,
             HashMap<String, Object> customData
     );
+
     Observable<JsonObject> changeSubscription(
             Boolean subscribed,
             HashMap<String, Object> customData
     );
     Observable<JsonObject> getSubscriptionStatus();
+
     Observable<JsonObject> appStarted(
             String appVersion,
             Boolean subscribed,

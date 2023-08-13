@@ -1,14 +1,12 @@
 package com.devinotele.devinosdk.sdk;
 
-
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.Objects;
 
-
 class SaveTokenUseCase extends BaseUC {
 
-    private DevinoLogsCallback logsCallback;
+    private final DevinoLogsCallback logsCallback;
 
     SaveTokenUseCase(HelpersPackage hp, DevinoLogsCallback callback) {
         super(hp);

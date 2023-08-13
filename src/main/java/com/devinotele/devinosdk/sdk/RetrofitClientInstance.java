@@ -21,7 +21,9 @@ class RetrofitClientInstance {
         if (retrofit == null) {
 
             String url = DevinoSdk.getInstance().getSavedBaseUrl();
-            if (url != null && !url.isEmpty()) BASE_URL = url;
+            if (url != null && !url.isEmpty()) {
+                BASE_URL = url;
+            }
 
             httpClient.addInterceptor(chain -> {
                 Request original = chain.request();
