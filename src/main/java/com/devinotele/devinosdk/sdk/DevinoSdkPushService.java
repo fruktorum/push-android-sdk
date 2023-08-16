@@ -58,6 +58,8 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
             String title = data.get("title");
             String body = data.get("body");
 
+            if (title == null || body == null) return;
+
             String badge = data.get("badge");
             int badgeNumber = 0;
             if (badge != null) {
@@ -353,5 +355,4 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
             this.login = login;
         }
     }
-
 }
