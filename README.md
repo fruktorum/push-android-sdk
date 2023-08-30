@@ -9,11 +9,10 @@ Devino SDK has a functionality to handle push notifications
 3. In your module-level build.gradle add the following line
 
 ```
-implementation(name:'devinosdk-release-<VERSION>', ext:'aar')
-implementation files('libs/push-android-sdk-release-3.0.0.aar')
+implementation files('libs/push-android-sdk-release-<VERSION>.aar')
 ```
 where 
-libs/push-android-sdk-release-3.0.0.aar - path for sdk library
+libs/push-android-sdk-release-<VERSION>.aar - path for sdk library
 
 4. Add to you proguard-rules.pro:
 
@@ -72,12 +71,13 @@ Also you can override default push action scheme and host. If not redefined, "de
 DevinoSdk.getInstance().setDefaultDeepLinkAction("scheme", "host");
 ```
 
-Also you can override default notification icon and icon color. Icon must have alpha transparency:
+Also you can override default notification icon and icon color:
 
 ```
 DevinoSdk.getInstance().setDefaultNotificationIcon(drawable);
 DevinoSdk.getInstance().setDefaultNotificationIconColor(colorInt);
 ```
+Icon must have alpha transparency.
 
 Also you can adjust the sound for the notification:
 
