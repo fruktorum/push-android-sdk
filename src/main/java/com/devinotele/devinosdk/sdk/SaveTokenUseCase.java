@@ -17,7 +17,10 @@ class SaveTokenUseCase extends BaseUC {
         firebaseMessaging.getToken().addOnCompleteListener(task -> {
 
             if (!task.isSuccessful()) {
-                logsCallback.onMessageLogged("Firebase Error:" + Objects.requireNonNull(task.getException()).getLocalizedMessage());
+                logsCallback.onMessageLogged(
+                        "Firebase Error:"
+                                + Objects.requireNonNull(task.getException()).getLocalizedMessage()
+                );
             } else {
                 String token = task.getResult();
                 if (token != null) {
@@ -37,5 +40,4 @@ class SaveTokenUseCase extends BaseUC {
             DevinoSdk.getInstance().appStarted();
         }
     }
-
 }

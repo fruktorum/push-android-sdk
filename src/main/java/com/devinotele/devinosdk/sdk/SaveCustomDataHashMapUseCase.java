@@ -2,7 +2,7 @@ package com.devinotele.devinosdk.sdk;
 
 public class SaveCustomDataHashMapUseCase extends BaseUC {
 
-    private DevinoLogsCallback logsCallback;
+    private final DevinoLogsCallback logsCallback;
 
     SaveCustomDataHashMapUseCase(HelpersPackage hp, DevinoLogsCallback callback) {
         super(hp);

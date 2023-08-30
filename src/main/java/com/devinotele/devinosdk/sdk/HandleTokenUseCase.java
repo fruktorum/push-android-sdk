@@ -25,7 +25,8 @@ class HandleTokenUseCase extends BaseUC {
     void run(FirebaseMessaging firebaseMessaging) {
         boolean tokenRegistered =
                 sharedPrefsHelper.getBoolean(SharedPrefsHelper.KEY_TOKEN_REGISTERED);
-        HashMap<String, Object> customData = sharedPrefsHelper.getHashMap(SharedPrefsHelper.KEY_CUSTOM_DATA);
+        HashMap<String, Object> customData =
+                sharedPrefsHelper.getHashMap(SharedPrefsHelper.KEY_CUSTOM_DATA);
         if (tokenRegistered) {
             registerUser(email, phone, customData);
         } else {

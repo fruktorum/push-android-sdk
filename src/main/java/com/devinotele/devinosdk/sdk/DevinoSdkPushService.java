@@ -65,6 +65,7 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
             if (badge != null) {
                 badgeNumber = Integer.parseInt(badge);
             }
+            Log.d("DevinoPush", "badgeNumber =  " + badgeNumber);
 
             String action = data.get("action");
             Log.d("DevinoPush", "action =  " + action);
@@ -213,24 +214,6 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
             builder.setColor(defaultNotificationIconColor);
         }
 
-        int EXPANDED_TEXT_LENGTH = 49;
-        if (text.length() >= EXPANDED_TEXT_LENGTH) {
-            builder.setStyle(new NotificationCompat.BigTextStyle()
-                    .bigText(text));
-        }
-
-        if (largeIcon != null) {
-            Bitmap bitmap = ImageDownloader.getBitmapFromURL(largeIcon);
-            if (bigPicture) {
-                builder.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(bitmap));
-            }
-            builder.setLargeIcon(bitmap);
-        }
-
-        if (soundUri != null) {
-            playRingtone(soundUri);
-        }
-
         if (buttons != null && buttons.size() > 0) {
             for (PushButton button : buttons) {
                 if (button.text != null) {
@@ -267,6 +250,22 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
             }
         }
 
+        int EXPANDED_TEXT_LENGTH = 49;
+        if (text.length() >= EXPANDED_TEXT_LENGTH) {
+            builder.setStyle(new NotificationCompat.BigTextStyle()
+                    .bigText(text));
+        }
+
+        if (largeIcon != null) {
+            Bitmap bitmap = ImageDownloader.getBitmapFromURL(largeIcon);
+            if (bigPicture) {
+                builder.setStyle(new NotificationCompat.BigPictureStyle()
+                        .bigPicture(bitmap)
+                        .bigLargeIcon(null));
+            }
+            builder.setLargeIcon(bitmap);
+        }
+
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
                 != PackageManager.PERMISSION_GRANTED
@@ -275,12 +274,16 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
             // through the DevinoSdk.getInstance().requestNotificationPermission() method.
             return;
         }
+        playRingtone(soundUri);
         notificationManager.notify(113, builder.build());
 
     }
 
     private void playRingtone(Uri customSound) {
-        Uri notificationSound = customSound != null ? customSound : RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Uri notificationSound =
+                customSound != null
+                        ? customSound
+                        : RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         Ringtone ringtone = RingtoneManager.getRingtone(getApplicationContext(), notificationSound);
         if (ringtone != null) {
             ringtone.play();
@@ -290,11 +293,15 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel notificationChannel = new NotificationChannel(channelId, "devino", importance);
+            NotificationChannel notificationChannel =
+                    new NotificationChannel(channelId, "devino", importance);
             notificationChannel.enableVibration(true);
-            notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+            notificationChannel.setVibrationPattern(
+                    new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400}
+            );
             notificationChannel.setSound(null, null);
-            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationManager notificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.createNotificationChannel(notificationChannel);
         }
     }
@@ -344,15 +351,6 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
 
         void setDeeplink(String deeplink) {
             this.deeplink = deeplink;
-        }
-    }
-
-    protected static class CustomData {
-        @SerializedName("login")
-        private String login;
-
-        CustomData(String login) {
-            this.login = login;
         }
     }
 }

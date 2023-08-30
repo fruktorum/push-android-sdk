@@ -15,7 +15,6 @@ public class DevinoPushReceiver extends BroadcastReceiver {
     static String KEY_DEFAULT_ACTION = "devino://default-push-action";
     static final String KEY_PUSH_ID = "pushId";
 
-
     @Override
     public void onReceive(Context context, Intent intent) {
 
