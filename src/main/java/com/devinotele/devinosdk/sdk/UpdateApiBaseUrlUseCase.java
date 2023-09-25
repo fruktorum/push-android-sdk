@@ -6,6 +6,7 @@ import android.widget.Toast;
 public class UpdateApiBaseUrlUseCase extends BaseUC {
 
     private final DevinoLogsCallback logsCallback;
+    private final String event = "Api Root Url was changed";
     private final RetrofitClientInstance retrofitClientInstance;
 
     UpdateApiBaseUrlUseCase(HelpersPackage hp, DevinoLogsCallback callback) {
@@ -16,8 +17,8 @@ public class UpdateApiBaseUrlUseCase extends BaseUC {
 
     void run(String newApiBaseUrl, Context ctx) {
         sharedPrefsHelper.saveData(SharedPrefsHelper.KEY_API_BASE_URL, newApiBaseUrl);
-        logsCallback.onMessageLogged("Api Root Url was changed -> " + newApiBaseUrl);
+        logsCallback.onMessageLogged(event + " -> " + newApiBaseUrl);
         retrofitClientInstance.setApiBaseUrl(newApiBaseUrl);
-        Toast.makeText(ctx, "Api Root Url was updated", Toast.LENGTH_SHORT).show();
+        Toast.makeText(ctx, event, Toast.LENGTH_SHORT).show();
     }
 }

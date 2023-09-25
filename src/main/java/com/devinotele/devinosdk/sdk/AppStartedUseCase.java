@@ -1,18 +1,21 @@
 package com.devinotele.devinosdk.sdk;
 
 import java.util.HashMap;
-import retrofit2.HttpException;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.HttpException;
 
 class AppStartedUseCase extends BaseUC {
 
     private final DevinoLogsCallback logsCallback;
-    private final String event = "App started";
+    private final String event = "App started: ";
+    private final RetrofitClientInstance retrofitClientInstance;
 
     AppStartedUseCase(HelpersPackage hp, DevinoLogsCallback callback) {
         super(hp);
         logsCallback = callback;
+        retrofitClientInstance = new RetrofitClientInstance();
     }
 
     public void run(String appVersion) {
@@ -25,12 +28,25 @@ class AppStartedUseCase extends BaseUC {
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            json -> logsCallback.onMessageLogged(event + " -> " + json.toString()),
+                            json -> logsCallback.onMessageLogged(
+                                    event
+                                            + retrofitClientInstance.getCurrentRequestUrl()
+                                            + " -> "
+                                            + json.toString()
+                            ),
                             throwable -> {
                                 if (throwable instanceof HttpException)
-                                    logsCallback.onMessageLogged(getErrorMessage(event, ((HttpException) throwable)));
+                                    logsCallback.onMessageLogged(
+                                            getErrorMessage(event
+                                                    + retrofitClientInstance.getCurrentRequestUrl(),
+                                                    ((HttpException) throwable)
+                                            )
+                                    );
                                 else
-                                    logsCallback.onMessageLogged(event + throwable.getMessage());
+                                    logsCallback.onMessageLogged(event
+                                            + retrofitClientInstance.getCurrentRequestUrl()
+                                            + throwable.getMessage()
+                                    );
                             }
                     )
             );

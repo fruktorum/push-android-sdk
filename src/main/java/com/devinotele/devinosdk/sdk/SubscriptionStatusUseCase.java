@@ -8,11 +8,13 @@ import retrofit2.HttpException;
 class SubscriptionStatusUseCase extends BaseUC {
 
     private final DevinoLogsCallback logsCallback;
-    private final String eventTemplate = "Subscription status";
+    private final String eventTemplate = "Subscription status: ";
+    private final RetrofitClientInstance retrofitClientInstance;
 
     SubscriptionStatusUseCase(HelpersPackage hp, DevinoLogsCallback callback) {
         super(hp);
         logsCallback = callback;
+        retrofitClientInstance = new RetrofitClientInstance();
     }
 
     Observable<JsonObject> run() {
@@ -22,20 +24,28 @@ class SubscriptionStatusUseCase extends BaseUC {
             return networkRepository.getSubscriptionStatus()
                     .doOnNext(
                             json -> logsCallback.onMessageLogged(
-                                    eventTemplate + " -> " + json.toString()
+                                    eventTemplate
+                                            + retrofitClientInstance.getCurrentRequestUrl()
+                                            + " -> "
+                                            + json.toString()
                             )
                     )
                     .doOnError(throwable -> {
                         if (throwable instanceof HttpException) {
                             logsCallback.onMessageLogged(
                                     getErrorMessage(
-                                            eventTemplate + " -> ",
+                                            eventTemplate
+                                                    + retrofitClientInstance.getCurrentRequestUrl()
+                                                    + " -> ",
                                             ((HttpException) throwable)
                                     )
                             );
                         } else {
                             logsCallback.onMessageLogged(
-                                    eventTemplate + " -> " + throwable.getMessage()
+                                    eventTemplate
+                                            + retrofitClientInstance.getCurrentRequestUrl()
+                                            + " -> "
+                                            + throwable.getMessage()
                             );
                         }
                     });

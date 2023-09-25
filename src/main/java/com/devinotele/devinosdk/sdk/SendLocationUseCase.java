@@ -6,11 +6,13 @@ import retrofit2.HttpException;
 class SendLocationUseCase extends BaseUC {
 
     private final DevinoLogsCallback logsCallback;
-    private final String event = "Send geo";
+    private final String event = "Send geo: ";
+    private final RetrofitClientInstance retrofitClientInstance;
 
     SendLocationUseCase(HelpersPackage hp, DevinoLogsCallback callback) {
         super(hp);
         logsCallback = callback;
+        retrofitClientInstance = new RetrofitClientInstance();
     }
 
     void run() {
@@ -25,18 +27,25 @@ class SendLocationUseCase extends BaseUC {
                         )
                 )
                 .subscribe(
-                        json -> logsCallback.onMessageLogged(event + " -> " + json.toString()),
+                        json -> logsCallback.onMessageLogged(event
+                                + retrofitClientInstance.getCurrentRequestUrl()
+                                + " -> " + json.toString()),
                         throwable -> {
                             if (throwable instanceof HttpException) {
                                 logsCallback.onMessageLogged(
                                         getErrorMessage(
-                                                event + " -> ",
+                                                event
+                                                        + retrofitClientInstance.getCurrentRequestUrl()
+                                                        + " -> ",
                                                 ((HttpException) throwable)
                                         )
                                 );
                             } else {
                                 logsCallback.onMessageLogged(
-                                        event + " -> " + throwable.getMessage()
+                                        event
+                                                + retrofitClientInstance.getCurrentRequestUrl()
+                                                + " -> "
+                                                + throwable.getMessage()
                                 );
                             }
                         }

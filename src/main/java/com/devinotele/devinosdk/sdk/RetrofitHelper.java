@@ -67,6 +67,7 @@ class RetrofitHelper {
         if (customData != null) {
             body.put("customData", customData);
         }
+
         return devinoApi.appStart(token, body);
     }
 

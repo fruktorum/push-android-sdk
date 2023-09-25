@@ -1,6 +1,7 @@
 package com.devinotele.devinosdk.sdk;
 
 import java.util.HashMap;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.HttpException;
@@ -8,11 +9,13 @@ import retrofit2.HttpException;
 class ChangeSubscriptionUseCase extends BaseUC {
 
     private final DevinoLogsCallback logsCallback;
-    private final String eventTemplate = "Set subscribed (%s)";
+    private final String eventTemplate = "Set subscribed (%s): ";
+    private final RetrofitClientInstance retrofitClientInstance;
 
     ChangeSubscriptionUseCase(HelpersPackage hp, DevinoLogsCallback callback) {
         super(hp);
         logsCallback = callback;
+        retrofitClientInstance = new RetrofitClientInstance();
     }
 
     void run(Boolean subscribed) {
@@ -28,7 +31,10 @@ class ChangeSubscriptionUseCase extends BaseUC {
                             json -> logsCallback.onMessageLogged(
                                     String.format(
                                             eventTemplate,
-                                            subscribed.toString()) + " -> " + json.toString()
+                                            subscribed.toString()
+                                    ) + retrofitClientInstance.getCurrentRequestUrl()
+                                            + " -> "
+                                            + json.toString()
                             ),
                             throwable -> {
                                 if (throwable instanceof HttpException)
@@ -37,7 +43,8 @@ class ChangeSubscriptionUseCase extends BaseUC {
                                                     String.format(
                                                             eventTemplate,
                                                             subscribed.toString()
-                                                    ),
+                                                    )
+                                                            + retrofitClientInstance.getCurrentRequestUrl(),
                                                     ((HttpException) throwable)
                                             )
                                     );
@@ -46,7 +53,9 @@ class ChangeSubscriptionUseCase extends BaseUC {
                                             String.format(
                                                     eventTemplate,
                                                     subscribed.toString()
-                                            ) + " -> " + throwable.getMessage()
+                                            )
+                                                    + retrofitClientInstance.getCurrentRequestUrl()
+                                                    + " -> " + throwable.getMessage()
                                     );
                             }
                     )

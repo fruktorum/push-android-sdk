@@ -9,11 +9,13 @@ import retrofit2.HttpException;
 class PushEventUseCase extends BaseUC {
 
     private final DevinoLogsCallback logsCallback;
-    private final String eventTemplate = "Push event (%s, %s, %s)";
+    private final String eventTemplate = "Push event (%s, %s, %s): ";
+    private final RetrofitClientInstance retrofitClientInstance;
 
     PushEventUseCase(HelpersPackage hp, DevinoLogsCallback callback) {
         super(hp);
         logsCallback = callback;
+        retrofitClientInstance = new RetrofitClientInstance();
     }
 
     void run(String pushId, String actionType, String actionId) {
@@ -32,7 +34,10 @@ class PushEventUseCase extends BaseUC {
                                                 pushId,
                                                 actionType,
                                                 actionId
-                                        ) + " -> " + json.toString()
+                                        )
+                                                + retrofitClientInstance.getCurrentRequestUrl()
+                                                + " -> "
+                                                + json.toString()
                                 );
                             },
                             throwable -> {
@@ -44,7 +49,9 @@ class PushEventUseCase extends BaseUC {
                                                             pushId,
                                                             actionType,
                                                             actionId
-                                                    ) + " -> ",
+                                                    )
+                                                            + retrofitClientInstance.getCurrentRequestUrl()
+                                                            + " -> ",
                                                     ((HttpException) throwable)
                                             )
                                     );
@@ -55,7 +62,10 @@ class PushEventUseCase extends BaseUC {
                                                     pushId,
                                                     actionType,
                                                     actionId
-                                            ) + " -> " + throwable.getMessage()
+                                            )
+                                                    + retrofitClientInstance.getCurrentRequestUrl()
+                                                    + " -> "
+                                                    + throwable.getMessage()
                                     );
                                 }
                             }

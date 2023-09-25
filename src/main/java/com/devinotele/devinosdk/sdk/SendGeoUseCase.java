@@ -9,11 +9,13 @@ import retrofit2.HttpException;
 class SendGeoUseCase extends BaseUC {
 
     private final DevinoLogsCallback logsCallback;
-    private final String eventTemplate = "Geo (%s, %s)";
+    private final String eventTemplate = "Geo (%s, %s): ";
+    private final RetrofitClientInstance retrofitClientInstance;
 
     SendGeoUseCase(HelpersPackage hp, DevinoLogsCallback callback) {
         super(hp);
         logsCallback = callback;
+        retrofitClientInstance = new RetrofitClientInstance();
     }
 
     void run(Double latitude, Double longitude) {
@@ -30,7 +32,9 @@ class SendGeoUseCase extends BaseUC {
                                             eventTemplate,
                                             latitude,
                                             longitude
-                                    ) + " -> " + json.toString()
+                                    )
+                                            + retrofitClientInstance.getCurrentRequestUrl()
+                                            + " -> " + json.toString()
                             ),
                             throwable -> {
                                 if (throwable instanceof HttpException)
@@ -40,7 +44,9 @@ class SendGeoUseCase extends BaseUC {
                                                             eventTemplate,
                                                             latitude,
                                                             longitude
-                                                    ) + " -> ",
+                                                    )
+                                                            + retrofitClientInstance.getCurrentRequestUrl()
+                                                            + " -> ",
                                                     ((HttpException) throwable))
                                     );
                                 else
@@ -49,7 +55,9 @@ class SendGeoUseCase extends BaseUC {
                                                     eventTemplate,
                                                     latitude,
                                                     longitude
-                                            ) + " -> " + throwable.getMessage());
+                                            )
+                                                    + retrofitClientInstance.getCurrentRequestUrl()
+                                                    + " -> " + throwable.getMessage());
                             }
                     )
             );

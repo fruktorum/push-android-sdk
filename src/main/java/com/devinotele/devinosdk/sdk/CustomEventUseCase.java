@@ -11,11 +11,13 @@ import retrofit2.HttpException;
 class CustomEventUseCase extends BaseUC {
 
     private final DevinoLogsCallback logsCallback;
-    private final String eventTemplate = "Custom event (%s) ";
+    private final String eventTemplate = "Custom event (%s): ";
+    private final RetrofitClientInstance retrofitClientInstance;
 
     CustomEventUseCase(HelpersPackage hp, DevinoLogsCallback callback) {
         super(hp);
         logsCallback = callback;
+        retrofitClientInstance = new RetrofitClientInstance();
     }
 
     @SuppressLint("CheckResult")
@@ -32,7 +34,9 @@ class CustomEventUseCase extends BaseUC {
                                     String.format(
                                             eventTemplate,
                                             eventName
-                                    ) + " -> " + json.toString()
+                                    )
+                                            + retrofitClientInstance.getCurrentRequestUrl()
+                                            + " -> " + json.toString()
                             ),
                             throwable -> {
                                 if (throwable instanceof HttpException)
@@ -41,7 +45,8 @@ class CustomEventUseCase extends BaseUC {
                                                     String.format(
                                                             eventTemplate,
                                                             eventName
-                                                    ),
+                                                    )
+                                                            + retrofitClientInstance.getCurrentRequestUrl(),
                                                     ((HttpException) throwable)
                                             )
                                     );
@@ -50,7 +55,9 @@ class CustomEventUseCase extends BaseUC {
                                             String.format(
                                                     eventTemplate,
                                                     eventName
-                                            ) + " -> " + throwable.getMessage());
+                                            )
+                                                    + retrofitClientInstance.getCurrentRequestUrl()
+                                                    + " -> " + throwable.getMessage());
                                 }
                             }
                     )
