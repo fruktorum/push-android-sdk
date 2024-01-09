@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -203,10 +204,9 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
 
         if (iconColor != null) {
             try {
-                Integer color = Integer.getInteger(iconColor);
-                if (color != null) {
-                    builder.setColor(color);
-                }
+                // Integer color = Integer.getInteger(iconColor);
+                int color = Color.parseColor(iconColor);
+                builder.setColor(color);
             } catch (Exception e) {
                 e.printStackTrace();
             }
