@@ -280,7 +280,7 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
                 builder.setStyle(new NotificationCompat
                         .BigPictureStyle()
                         .bigPicture(bitmap)
-                        .bigLargeIcon(null)
+                        .bigLargeIcon((Bitmap)null)
                 );
             }
             builder.setLargeIcon(bitmap);
