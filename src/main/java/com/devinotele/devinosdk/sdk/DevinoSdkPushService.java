@@ -2,6 +2,7 @@ package com.devinotele.devinosdk.sdk;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ActivityOptions;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -15,6 +16,7 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.ColorInt;
@@ -34,7 +36,6 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class DevinoSdkPushService extends FirebaseMessagingService {
     Gson gson = new Gson();
@@ -172,12 +173,30 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
         PendingIntent defaultPendingIntent;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            defaultPendingIntent = PendingIntent.getActivity(
-                    getApplicationContext(),
-                    0,
-                    activityIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
-            );
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                Bundle options = ActivityOptions.makeBasic()
+                        .setPendingIntentBackgroundActivityStartMode(
+                                ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED
+                        ).toBundle();
+
+                defaultPendingIntent = PendingIntent.getActivity(
+                        getApplicationContext(),
+                        0,
+                        activityIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE,
+                        options
+                );
+
+            } else {
+                defaultPendingIntent = PendingIntent.getActivity(
+                        getApplicationContext(),
+                        0,
+                        activityIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
+                );
+            }
+
         } else {
             defaultPendingIntent = PendingIntent.getBroadcast(
                     getApplicationContext(),
@@ -280,7 +299,7 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
                 builder.setStyle(new NotificationCompat
                         .BigPictureStyle()
                         .bigPicture(bitmap)
-                        .bigLargeIcon((Bitmap)null)
+                        .bigLargeIcon((Bitmap) null)
                 );
             }
             builder.setLargeIcon(bitmap);
