@@ -4,8 +4,8 @@ buildscript {
         mavenCentral()
 	}
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.3.1'
-        classpath 'com.google.gms:google-services:4.3.15'
+        classpath 'com.android.tools.build:gradle:8.1.4'
+        classpath 'com.google.gms:google-services:4.4.1'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1' 
     }
 }
@@ -21,14 +21,21 @@ apply plugin: 'com.android.library'
 //group='com.github.devinotelecom'
 
 android {
-    compileSdkVersion 33
+
+    namespace 'com.devinotele.devinosdk'
+
+    compileSdk 34
 
     defaultConfig {
         minSdkVersion 23
-        targetSdkVersion 33
+        targetSdkVersion 34
         versionCode 9
         versionName "3.0.0"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {
@@ -52,11 +59,11 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.6.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.core:core:1.9.0'
+    implementation 'androidx.core:core:1.12.0'
 
-    implementation 'androidx.media:media:1.6.0'
+    implementation 'androidx.media:media:1.7.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 
     testImplementation 'junit:junit:4.13.2'
@@ -70,7 +77,10 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
     implementation 'io.reactivex.rxjava2:rxjava:2.2.21'
     implementation 'com.google.firebase:firebase-core:21.1.1'
-    implementation 'com.google.firebase:firebase-messaging:23.1.1'
+    implementation 'com.google.firebase:firebase-messaging:23.4.1'
 
-    api "com.google.android.gms:play-services-location:21.0.1"
+    api "com.google.android.gms:play-services-location:21.2.0"
+
+    def work_version = "2.9.0"
+    implementation "androidx.work:work-runtime:$work_version"
 }
