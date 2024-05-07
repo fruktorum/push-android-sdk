@@ -13,6 +13,8 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.AudioAttributes;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -220,11 +222,13 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
                 .setAutoCancel(true)
                 .setContentIntent(defaultPendingIntent)
                 .setDeleteIntent(deletePendingIntent)
-                // .setSound(null)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setChannelId(channelId)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            builder.setSound(null);
+        }
 
         if (badgeNumber != null && badgeNumber > 0) {
             builder.setNumber(badgeNumber);
@@ -247,7 +251,7 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
             builder.setColor(defaultNotificationIconColor);
         }
 
-        if (buttons != null && buttons.size() > 0) {
+        if (buttons != null && !buttons.isEmpty()) {
             for (PushButton button : buttons) {
                 if (button.text != null) {
                     Intent buttonActivityIntent = new Intent(this, NotificationTrampolineActivity.class);
@@ -323,7 +327,22 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
             Log.e(LOG_TAG, "permission error Android " + Build.VERSION.SDK_INT);
         }
 
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            playRingtone(soundUri);
+        }
+
         notificationManager.notify(113, builder.build());
+    }
+
+    private void playRingtone(Uri customSound) {
+        Uri notificationSound =
+                customSound != null
+                        ? customSound
+                        : RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Ringtone ringtone = RingtoneManager.getRingtone(getApplicationContext(), notificationSound);
+        if (ringtone != null) {
+            ringtone.play();
+        }
     }
 
     private void createNotificationChannel(Uri sound) {
