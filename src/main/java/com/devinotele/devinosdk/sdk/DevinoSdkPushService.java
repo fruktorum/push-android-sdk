@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.media.AudioAttributes;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -50,7 +51,7 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        if (remoteMessage.getData().size() > 0) {
+        if (!remoteMessage.getData().isEmpty()) {
             Map<String, String> data = remoteMessage.getData();
             Log.d(LOG_TAG, "data = " + data);
 
@@ -213,7 +214,7 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
                 PendingIntent.FLAG_IMMUTABLE
         );
 
-        createNotificationChannel();
+        createNotificationChannel(soundUri);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
                 .setContentTitle(title)
@@ -221,11 +222,13 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
                 .setAutoCancel(true)
                 .setContentIntent(defaultPendingIntent)
                 .setDeleteIntent(deletePendingIntent)
-                .setSound(null)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setChannelId(channelId)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            builder.setSound(null);
+        }
 
         if (badgeNumber != null && badgeNumber > 0) {
             builder.setNumber(badgeNumber);
@@ -248,7 +251,7 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
             builder.setColor(defaultNotificationIconColor);
         }
 
-        if (buttons != null && buttons.size() > 0) {
+        if (buttons != null && !buttons.isEmpty()) {
             for (PushButton button : buttons) {
                 if (button.text != null) {
                     Intent buttonActivityIntent = new Intent(this, NotificationTrampolineActivity.class);
@@ -324,7 +327,10 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
             Log.e(LOG_TAG, "permission error Android " + Build.VERSION.SDK_INT);
         }
 
-        playRingtone(soundUri);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            playRingtone(soundUri);
+        }
+
         notificationManager.notify(113, builder.build());
     }
 
@@ -339,7 +345,7 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
         }
     }
 
-    private void createNotificationChannel() {
+    private void createNotificationChannel(Uri sound) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel notificationChannel =
@@ -348,9 +354,20 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
             notificationChannel.setVibrationPattern(
                     new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400}
             );
-            notificationChannel.setSound(null, null);
+
+            //  notificationChannel.setSound(null, null);
+
             NotificationManager notificationManager =
                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+            if (sound != null) {
+                AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                        .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                        .build();
+                notificationChannel.setSound(sound, audioAttributes);
+            }
+
             notificationManager.createNotificationChannel(notificationChannel);
         }
     }
