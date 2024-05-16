@@ -39,6 +39,10 @@ class BaseUC {
         return errMsg.getMessage();
     }
 
+    void updateNetworkRepository() {
+        networkRepository.updateRetrofitHelper();
+    }
+
     static void unsubscribeAll() {
         compositeDisposable.clear();
     }
