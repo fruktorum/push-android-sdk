@@ -15,7 +15,6 @@ class RetrofitClientInstance {
 
     public void setApiBaseUrl(String newApiBaseUrl) {
         BASE_URL = newApiBaseUrl;
-      //  if (retrofit != null) retrofit = retrofit.newBuilder().baseUrl(BASE_URL).build();
     }
 
     public String getCurrentRequestUrl() {
@@ -23,8 +22,6 @@ class RetrofitClientInstance {
     }
 
     static Retrofit getRetrofitInstance(final String apiKey) {
-      //  if (retrofit == null) {
-
             String url = DevinoSdk.getInstance().getSavedBaseUrl();
             if (url != null && !url.isEmpty()) {
                 BASE_URL = url;
@@ -48,7 +45,6 @@ class RetrofitClientInstance {
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
-    //    }
         return retrofit;
     }
 }

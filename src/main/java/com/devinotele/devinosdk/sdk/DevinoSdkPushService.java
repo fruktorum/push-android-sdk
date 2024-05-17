@@ -245,7 +245,7 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
                 int color = Color.parseColor(iconColor);
                 builder.setColor(color);
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.d(LOG_TAG, "iconColor error: " + e.getLocalizedMessage());
             }
         } else {
             builder.setColor(defaultNotificationIconColor);
@@ -354,8 +354,6 @@ public class DevinoSdkPushService extends FirebaseMessagingService {
             notificationChannel.setVibrationPattern(
                     new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400}
             );
-
-            //  notificationChannel.setSound(null, null);
 
             NotificationManager notificationManager =
                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
