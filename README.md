@@ -1,3 +1,8 @@
+НЕ АКТУАЛЬНО
+
+Актуальный репозиторий: 
+https://gitlab.com/fruktorum/android/devino/DevinoPushV1-AndroidSDK
+
 ## Devino SDK
 
 Devino SDK has a functionality to handle push notifications
